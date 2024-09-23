@@ -85,6 +85,57 @@ with st.expander("Add a Goal"):
         else:
             st.error("Please enter a valid goal name and amount.")
 
+# Function to display the add goal section
+def display_add_goal_section(edit_index=None):
+    if edit_index is not None:
+        # Pre-fill the values for editing
+        goal = st.session_state.goals[edit_index]
+        goal_name = goal['goal_name']
+        goal_amount = goal['goal_amount']
+        interest_rate = goal['interest_rate']
+        monthly_contribution = goal['monthly_contribution']
+        target_year = goal['target_year']
+    else:
+        # Default values for a new goal
+        goal_name = ""
+        goal_amount = 0
+        interest_rate = 0.0
+        monthly_contribution = 0.0
+        target_year = 0
+
+    # Add goal inputs
+    goal_name = st.text_input("Name of goal", value=goal_name)
+    goal_amount = st.number_input("Goal amount", value=goal_amount, min_value=0)
+    interest_rate = st.number_input("Rate of return or interest rate (%)", value=interest_rate, min_value=0.0, max_value=100.0, step=0.1)
+    monthly_contribution = st.number_input("Monthly contribution towards this goal", value=monthly_contribution, min_value=0.0)
+    target_year = st.number_input("Target Year", value=target_year, min_value=2024)  # Adjust min_value as needed
+
+    # Update/Add Goal button
+    if edit_index is not None:
+        if st.button("Update", key="update_button"):
+            # Update the goal in the session state
+            st.session_state.goals[edit_index] = {
+                'goal_name': goal_name,
+                'goal_amount': goal_amount,
+                'interest_rate': interest_rate,
+                'monthly_contribution': monthly_contribution,
+                'target_year': target_year,
+                'goal_type': goal['goal_type']  # Preserve the goal type
+            }
+            st.success(f"Goal '{goal_name}' updated successfully.")
+    else:
+        if st.button("Add Goal to Timeline", key="add_goal_button"):
+            # Add a new goal to the session state
+            st.session_state.goals.append({
+                'goal_name': goal_name,
+                'goal_amount': goal_amount,
+                'interest_rate': interest_rate,
+                'monthly_contribution': monthly_contribution,
+                'target_year': target_year,
+                'goal_type': "Savings"  # Default value, adjust as needed
+            })
+            st.success(f"Goal '{goal_name}' added successfully.")
+
 # Manage goals section
 for index, goal in enumerate(st.session_state.goals):
     with st.sidebar.expander(f"{goal['goal_name']} (Target Year: {goal['target_year']} or Monthly Contribution: {goal['monthly_contribution']})"):
