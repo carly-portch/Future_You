@@ -35,29 +35,6 @@ st.markdown("""
 if 'goals' not in st.session_state:
     st.session_state.goals = []
 
-# Sidebar for editing goals
-st.sidebar.header("Manage Goals")
-goal_to_edit = st.sidebar.selectbox("Select a goal to edit", [""] + [goal['goal_name'] for goal in st.session_state.goals])
-
-if goal_to_edit:
-    goal_index = next(i for i, goal in enumerate(st.session_state.goals) if goal['goal_name'] == goal_to_edit)
-    goal_name = st.sidebar.text_input("Name of goal", value=st.session_state.goals[goal_index]['goal_name'])
-    new_goal_amount = st.sidebar.number_input("Goal amount", value=int(round(st.session_state.goals[goal_index]['goal_amount'])), min_value=0)
-    new_interest_rate = st.sidebar.number_input("Rate of return or interest rate (%)", value=st.session_state.goals[goal_index]['interest_rate'], min_value=0.0, max_value=100.0, step=0.1)
-    new_contribution_amount = st.sidebar.number_input("Monthly contribution towards this goal", value=int(round(st.session_state.goals[goal_index]['monthly_contribution'])), min_value=0.0)
-
-    if st.sidebar.button("Update Goal"):
-        st.session_state.goals[goal_index]['goal_name'] = goal_name
-        st.session_state.goals[goal_index]['goal_amount'] = new_goal_amount
-        st.session_state.goals[goal_index]['interest_rate'] = new_interest_rate
-        st.session_state.goals[goal_index]['monthly_contribution'] = new_contribution_amount
-        st.sidebar.success(f"Goal '{goal_name}' updated successfully.")
-
-    if st.sidebar.button("Delete Goal"):
-        st.session_state.goals.pop(goal_index)
-        st.sidebar.success(f"Goal '{goal_name}' deleted successfully.")
-        goal_to_edit = ""
-
 # Goal input form
 with st.expander("Add a Goal"):
     goal_name = st.text_input("Name of goal")
@@ -78,41 +55,30 @@ with st.expander("Add a Goal"):
         target_year = st.number_input("Target year to reach this goal (yyyy)", min_value=current_year)
         contribution_amount = None
 
-# Add goal button
-if st.button("Add goal to timeline"):
-    if goal_name and goal_amount > 0:
-        if goal_type == "Monthly Contribution":
-            target_year = int(target_year)
-        elif goal_type == "Target Year":
-            months_to_goal = 12 * (target_year - current_year)
-            rate_of_return_monthly = interest_rate / 100 / 12
-            if rate_of_return_monthly > 0:
-                monthly_contribution = goal_amount * rate_of_return_monthly / ((1 + rate_of_return_monthly) ** months_to_goal - 1)
-            else:
-                monthly_contribution = goal_amount / months_to_goal
+    # Add goal button
+    if st.button("Add goal to timeline"):
+        if goal_name and goal_amount > 0:
+            if goal_type == "Monthly Contribution":
+                target_year = int(target_year)
+            elif goal_type == "Target Year":
+                months_to_goal = 12 * (target_year - current_year)
+                rate_of_return_monthly = interest_rate / 100 / 12
+                if rate_of_return_monthly > 0:
+                    monthly_contribution = goal_amount * rate_of_return_monthly / ((1 + rate_of_return_monthly) ** months_to_goal - 1)
+                else:
+                    monthly_contribution = goal_amount / months_to_goal
 
-        # Create goal dictionary
-        new_goal = {
-            'goal_name': goal_name,
-            'goal_amount': round(goal_amount),  # Ensure rounding to whole number
-            'interest_rate': round(interest_rate),
-            'monthly_contribution': round(contribution_amount if contribution_amount else monthly_contribution),  # Ensure rounding to whole number
-            'target_year': target_year
-        }
-
-        # Check if the goal is already in the session state
-        if new_goal not in st.session_state.goals:
-            st.session_state.goals.append(new_goal)
+            st.session_state.goals.append({
+                'goal_name': goal_name,
+                'goal_amount': round(goal_amount),  # Ensure rounding to whole number
+                'interest_rate': round(interest_rate),
+                'monthly_contribution': round(contribution_amount if contribution_amount else monthly_contribution),  # Ensure rounding to whole number
+                'target_year': target_year,
+                'editable': False  # Track if the goal is editable
+            })
             st.success(f"Goal '{goal_name}' added successfully.")
         else:
-            st.warning(f"Goal '{goal_name}' is already in the timeline.")
-
-        # Update the sidebar with the new goal if it's not there
-        if new_goal not in st.session_state.goals:
-            st.session_state.goals.append(new_goal)  # Ensure it's in the sidebar goals
-    else:
-        st.error("Please enter a valid goal name and amount.")
-
+            st.error("Please enter a valid goal name and amount.")
 
 st.markdown("---")
 st.markdown("<h3 style='color: #2196F3;'>Outputs</h3>", unsafe_allow_html=True)
@@ -159,15 +125,36 @@ def plot_timeline(snapshot_year=None):
         line=dict(color='red', width=2)
     ))
 
-    # Add vertical line for snapshot year
-    if snapshot_year:
-        fig.add_vline(x=snapshot_year, line_color="blue", line_width=2, annotation_text="Snapshot Year", annotation_position="top right")
-
     fig.update_layout(title="Joint Life Timeline", xaxis_title='Year', yaxis=dict(visible=False), showlegend=False)
     st.plotly_chart(fig, use_container_width=True)
 
 # Show Timeline
 plot_timeline()
+
+# Sidebar for managing goals
+st.sidebar.header("Manage Goals")
+for goal in st.session_state.goals:
+    with st.sidebar.expander(goal['goal_name'], expanded=False):
+        st.write(f"**Goal Amount:** ${goal['goal_amount']}")
+        st.write(f"**Interest Rate:** {goal['interest_rate']}%")
+        st.write(f"**Monthly Contribution:** ${goal['monthly_contribution']}")
+        
+        # Edit button
+        if st.button(f"Edit {goal['goal_name']}"):
+            goal['editable'] = not goal['editable']
+            if goal['editable']:
+                goal_name_edit = st.sidebar.text_input("Edit Goal Name", value=goal['goal_name'])
+                new_goal_amount = st.sidebar.number_input("Edit Goal Amount", value=goal['goal_amount'], min_value=0)
+                new_interest_rate = st.sidebar.number_input("Edit Interest Rate", value=goal['interest_rate'], min_value=0.0, max_value=100.0, step=0.1)
+                new_contribution_amount = st.sidebar.number_input("Edit Monthly Contribution", value=goal['monthly_contribution'], min_value=0.0)
+                
+                if st.button("Update"):
+                    goal['goal_name'] = goal_name_edit
+                    goal['goal_amount'] = new_goal_amount
+                    goal['interest_rate'] = new_interest_rate
+                    goal['monthly_contribution'] = new_contribution_amount
+                    goal['editable'] = False
+                    st.sidebar.success(f"Goal '{goal_name_edit}' updated successfully.")
 
 # Monthly contributions section
 st.markdown("<h4>Monthly Contributions</h4>", unsafe_allow_html=True)
