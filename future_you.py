@@ -78,29 +78,41 @@ with st.expander("Add a Goal"):
         target_year = st.number_input("Target year to reach this goal (yyyy)", min_value=current_year)
         contribution_amount = None
 
-    # Add goal button
-    if st.button("Add goal to timeline"):
-        if goal_name and goal_amount > 0:
-            if goal_type == "Monthly Contribution":
-                target_year = int(target_year)
-            elif goal_type == "Target Year":
-                months_to_goal = 12 * (target_year - current_year)
-                rate_of_return_monthly = interest_rate / 100 / 12
-                if rate_of_return_monthly > 0:
-                    monthly_contribution = goal_amount * rate_of_return_monthly / ((1 + rate_of_return_monthly) ** months_to_goal - 1)
-                else:
-                    monthly_contribution = goal_amount / months_to_goal
+# Add goal button
+if st.button("Add goal to timeline"):
+    if goal_name and goal_amount > 0:
+        if goal_type == "Monthly Contribution":
+            target_year = int(target_year)
+        elif goal_type == "Target Year":
+            months_to_goal = 12 * (target_year - current_year)
+            rate_of_return_monthly = interest_rate / 100 / 12
+            if rate_of_return_monthly > 0:
+                monthly_contribution = goal_amount * rate_of_return_monthly / ((1 + rate_of_return_monthly) ** months_to_goal - 1)
+            else:
+                monthly_contribution = goal_amount / months_to_goal
 
-            st.session_state.goals.append({
-                'goal_name': goal_name,
-                'goal_amount': round(goal_amount),  # Ensure rounding to whole number
-                'interest_rate': round(interest_rate),
-                'monthly_contribution': round(contribution_amount if contribution_amount else monthly_contribution),  # Ensure rounding to whole number
-                'target_year': target_year
-            })
+        # Create goal dictionary
+        new_goal = {
+            'goal_name': goal_name,
+            'goal_amount': round(goal_amount),  # Ensure rounding to whole number
+            'interest_rate': round(interest_rate),
+            'monthly_contribution': round(contribution_amount if contribution_amount else monthly_contribution),  # Ensure rounding to whole number
+            'target_year': target_year
+        }
+
+        # Check if the goal is already in the session state
+        if new_goal not in st.session_state.goals:
+            st.session_state.goals.append(new_goal)
             st.success(f"Goal '{goal_name}' added successfully.")
         else:
-            st.error("Please enter a valid goal name and amount.")
+            st.warning(f"Goal '{goal_name}' is already in the timeline.")
+
+        # Update the sidebar with the new goal if it's not there
+        if new_goal not in st.session_state.goals:
+            st.session_state.goals.append(new_goal)  # Ensure it's in the sidebar goals
+    else:
+        st.error("Please enter a valid goal name and amount.")
+
 
 st.markdown("---")
 st.markdown("<h3 style='color: #2196F3;'>Outputs</h3>", unsafe_allow_html=True)
