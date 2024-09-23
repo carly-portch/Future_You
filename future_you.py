@@ -5,13 +5,13 @@ import numpy as np
 from datetime import date
 
 st.title("Plan Your Future Together")
-st.write("This tool helps you and your partner estimate your retirement savings and manage joint medium- and long-term goals.")
-st.write("To get started, please fill out the fields below. You can add any medium- or long-term goals you both want to save for, such as a down payment on a house, children's education, or a dream vacation.")
+st.write("This tool helps you and your partner estimate your savings and manage joint medium- and long-term goals.")
+st.write("Add goals such as a down payment, education, or a dream vacation. Specify the target year or monthly contribution. Once set, click 'Add goal to timeline' to include it in the timeline below. Use the panel to remove goals as needed.")
 
 # Initialize variables
 current_year = date.today().year
 
-# Input fields for monthly income and expenses
+# Input fields for income and expenses
 monthly_income = st.number_input("Enter your combined monthly income after tax", min_value=0.0)
 monthly_expenses = st.number_input("Enter your combined monthly expenses", min_value=0.0)
 
@@ -64,18 +64,80 @@ with st.expander("Add a Goal"):
         else:
             st.error("Please enter a valid goal name and amount.")
 
-# Snapshot Year Input
-snapshot_year_input = st.number_input("Enter a year to view financial snapshot", min_value=current_year)
+# Plot timeline
+def plot_timeline(snapshot_year=None):
+    current_year = date.today().year
+    
+    # Get latest goal year for timeline end
+    if st.session_state.goals:
+        latest_year = max(goal['target_year'] for goal in st.session_state.goals)
+    else:
+        latest_year = current_year
 
-if st.button("Show Snapshot"):
-    st.markdown("### Financial Snapshot")
+    # Create timeline data
+    timeline_data = {
+        'Year': [current_year] + [goal['target_year'] for goal in st.session_state.goals],
+        'Event': ['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals],
+        'Text': [
+            f"<b>Current Year:</b> {current_year}<br><b>Combined Monthly Income:</b> ${int(monthly_income)}<br><b>Monthly Expenses:</b> ${int(monthly_expenses)}"
+        ] + [
+            f"<b>Goal:</b> {goal['goal_name']}<br><b>Amount:</b> ${int(goal['goal_amount'])}<br><b>Monthly Contribution:</b> ${int(goal['monthly_contribution'])}"
+            for goal in st.session_state.goals
+        ]
+    }
 
-    # Loop through each goal and calculate saved amount by snapshot year
-    for goal in st.session_state.goals:
-        months_to_snapshot = (snapshot_year_input - current_year) * 12
-        saved_amount = min(goal['goal_amount'], goal['monthly_contribution'] * months_to_snapshot)
-        progress = saved_amount / goal['goal_amount'] if goal['goal_amount'] > 0 else 0
+    timeline_df = pd.DataFrame(timeline_data)
 
-        # Display progress for each goal
-        st.write(f"- {goal['goal_name']}: ${int(saved_amount)} saved ({progress:.0%} complete)")
-        st.progress(progress)
+    # Create the figure
+    fig = go.Figure()
+    
+    # Add red dots for current year and goals
+    fig.add_trace(go.Scatter(
+        x=[current_year] + [goal['target_year'] for goal in st.session_state.goals], 
+        y=[0] * (1 + len(st.session_state.goals)), 
+        mode='markers+text', 
+        marker=dict(size=12, color='red', line=dict(width=2, color='black')), 
+        text=['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals], 
+        textposition='top center', 
+        hoverinfo='text', 
+        hovertext=timeline_df['Text']
+    ))
+    
+    # Add line connecting the red dots
+    fig.add_trace(go.Scatter(
+        x=[current_year] + [goal['target_year'] for goal in st.session_state.goals], 
+        y=[0] * (1 + len(st.session_state.goals)), 
+        mode='lines', 
+        line=dict(color='red', width=2)
+    ))
+
+    # Add a vertical line for the selected snapshot year if provided
+    if snapshot_year is not None:
+        fig.add_vline(x=snapshot_year, line_color="blue", line_width=2, annotation_text="Snapshot Year", annotation_position="top right")
+    
+    # Update layout
+    fig.update_layout(
+        title="Joint Life Timeline",
+        xaxis_title='Year',
+        yaxis=dict(visible=False),
+        xaxis=dict(
+            tickmode='array',
+            tickvals=[current_year] + [goal['target_year'] for goal in st.session_state.goals],
+            ticktext=[f"{current_year}"] + [f"{goal['target_year']}" for goal in st.session_state.goals]
+        ),
+        showlegend=False
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+# Display existing goals in the sidebar
+st.sidebar.header("Existing Goals")
+goal_to_remove = st.sidebar.selectbox("Select a goal to remove", [""] + [goal['goal_name'] for goal in st.session_state.goals])
+
+if st.sidebar.button("Remove Goal"):
+    if goal_to_remove:
+        st.session_state.goals = [goal for goal in st.session_state.goals if goal['goal_name'] != goal_to_remove]
+        st.sidebar.success(f"Goal '{goal_to_remove}' removed successfully.")
+
+# Plot timeline with the current state
+plot_timeline()
