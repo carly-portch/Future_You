@@ -36,18 +36,27 @@ if 'goals' not in st.session_state:
     st.session_state.goals = []
 
 # Sidebar for editing goals
+# Sidebar for editing goals
 st.sidebar.header("Edit Goals")
 if st.session_state.goals:
     goal_to_edit = st.sidebar.selectbox("Select a goal to edit", [goal['goal_name'] for goal in st.session_state.goals])
 
     if goal_to_edit:  # Ensure a goal is selected
-        goal_index = next(i for i, goal in enumerate(st.session_state.goals) if goal['goal_name'] == goal_to_edit)
-        
+        goal_index = next((i for i, goal in enumerate(st.session_state.goals) if goal['goal_name'] == goal_to_edit), None)
+
+        # Debug: Print session state and goal index
+        st.sidebar.write("Current Goals:", st.session_state.goals)
+        st.sidebar.write("Selected Goal Index:", goal_index)
+
         # Only access the selected goal's data if the goal_index is valid
-        if goal_index >= 0 and goal_index < len(st.session_state.goals):
+        if goal_index is not None and 0 <= goal_index < len(st.session_state.goals):
             goal_name = st.sidebar.text_input("Name of goal", value=st.session_state.goals[goal_index]['goal_name'])
             new_goal_amount = st.sidebar.number_input("Goal amount", value=int(round(st.session_state.goals[goal_index]['goal_amount'])), min_value=0)
-            new_interest_rate = st.sidebar.number_input("Rate of return or interest rate (%)", value=st.session_state.goals[goal_index]['interest_rate'], min_value=0.0, max_value=100.0, step=0.1)
+            
+            # Provide a default value for interest_rate if it's not set
+            current_interest_rate = st.session_state.goals[goal_index].get('interest_rate', 0.0)
+            new_interest_rate = st.sidebar.number_input("Rate of return or interest rate (%)", value=current_interest_rate, min_value=0.0, max_value=100.0, step=0.1)
+            
             new_contribution_amount = st.sidebar.number_input("Monthly contribution towards this goal", value=int(round(st.session_state.goals[goal_index]['monthly_contribution'])), min_value=0)
 
             if st.sidebar.button("Update Goal"):
@@ -62,6 +71,7 @@ if st.session_state.goals:
                 st.sidebar.success(f"Goal '{goal_name}' deleted successfully.")
 else:
     st.sidebar.text("No goals added yet.")
+
 
 
 # Goal input form
