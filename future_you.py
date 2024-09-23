@@ -83,4 +83,70 @@ def plot_timeline():
 
     # Add line connecting the markers
     fig.add_trace(go.Scatter(
-        x=[current_year
+        x=[current_year] + [goal['target_year'] for goal in st.session_state.goals],
+        y=[0] * (1 + len(st.session_state.goals)),
+        mode='lines',
+        line=dict(color='red', width=2)
+    ))
+
+    # Update layout
+    fig.update_layout(
+        title="Joint Life Timeline",
+        xaxis_title='Year',
+        yaxis=dict(visible=False),
+        xaxis=dict(
+            tickmode='array',
+            tickvals=[current_year] + [goal['target_year'] for goal in st.session_state.goals],
+            ticktext=[f"{current_year}"] + [f"{goal['target_year']}" for goal in st.session_state.goals]
+        ),
+        showlegend=False
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+# Button to add a new goal
+if st.button("Add a New Goal"):
+    with st.form("goal_form"):
+        st.subheader("Goal Details")
+        goal_name = st.text_input("Name of goal", "")
+        goal_amount = st.number_input("Goal amount", min_value=0.0)
+        interest_rate = st.number_input("Rate of return or interest rate (%)", min_value=0.0, max_value=100.0, value=5.0)
+        goal_type = st.radio("Select how you want to calculate your goal", ["Target Year", "Monthly Contribution"], index=0)
+        if goal_type == "Monthly Contribution":
+            contribution_amount = st.number_input("Monthly contribution towards this goal", min_value=0.0)
+            target_year = None
+        else:
+            contribution_amount = None
+            target_year = st.number_input("Target year to reach this goal (yyyy)", min_value=current_year, value=current_year)
+
+        if st.form_submit_button("Add to Timeline"):
+            add_goal(goal_name, goal_amount, interest_rate, goal_type, contribution_amount, target_year)
+
+# Sidebar to display existing goals
+st.sidebar.header("Existing Goals")
+for idx, goal in enumerate(st.session_state.goals):
+    with st.sidebar.expander(goal['goal_name'], expanded=True):
+        st.write(f"Goal Amount: ${goal['goal_amount']}")
+        st.write(f"Monthly Contribution: ${goal['monthly_contribution']}")
+
+        # Option to edit
+        if st.button(f"Edit Goal {idx}"):
+            goal_details = {
+                "goal_name": st.text_input("Name of goal", goal['goal_name']),
+                "goal_amount": st.number_input("Goal amount", min_value=0.0, value=goal['goal_amount']),
+                "interest_rate": st.number_input("Rate of return or interest rate (%)", min_value=0.0, max_value=100.0, value=goal['interest_rate']),
+                "goal_type": st.radio("Select how you want to calculate your goal", ["Target Year", "Monthly Contribution"], index=["Target Year", "Monthly Contribution"].index(goal['goal_type'])),
+                "contribution_amount": st.number_input("Monthly contribution towards this goal", min_value=0.0) if goal['goal_type'] == "Monthly Contribution" else None,
+                "target_year": st.number_input("Target year to reach this goal (yyyy)", min_value=current_year, value=goal['target_year']),
+            }
+            if st.button("Update Goal"):
+                # Update logic here
+                st.session_state.goals[idx] = {
+                    'goal_name': goal_details['goal_name'],
+                    'goal_amount': round(goal_details['goal_amount']),
+                    'monthly_contribution': round(goal_details['contribution_amount']) if goal_details['goal_type'] == "Monthly Contribution" else goal['monthly_contribution'],
+                    'target_year': goal_details['target_year'],
+                    'interest_rate': goal_details['interest_rate'],
+                    'goal_type': goal_details['goal_type']
+                }
+                st.success(f"Goal '{goal_details['goal_name']}' updated successfully
