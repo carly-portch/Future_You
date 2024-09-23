@@ -35,9 +35,6 @@ st.markdown("""
 if 'goals' not in st.session_state:
     st.session_state.goals = []
 
-# Sidebar for managing goals
-st.sidebar.header("Manage Goals")
-
 # Goal input form
 with st.expander("Add a Goal"):
     goal_name = st.text_input("Name of goal")
@@ -71,103 +68,17 @@ with st.expander("Add a Goal"):
                 else:
                     monthly_contribution = goal_amount / months_to_goal
 
-            # Add goal to session state
-            new_goal = {
+            st.session_state.goals.append({
                 'goal_name': goal_name,
-                'goal_amount': round(goal_amount),
+                'goal_amount': round(goal_amount),  # Ensure rounding to whole number
                 'interest_rate': round(interest_rate),
-                'monthly_contribution': round(contribution_amount if contribution_amount else monthly_contribution),
+                'monthly_contribution': round(contribution_amount if contribution_amount else monthly_contribution),  # Ensure rounding to whole number
                 'target_year': target_year,
-                'goal_type': goal_type  # Store goal type for display
-            }
-            st.session_state.goals.append(new_goal)
+                'editable': False  # Track if the goal is editable
+            })
             st.success(f"Goal '{goal_name}' added successfully.")
         else:
             st.error("Please enter a valid goal name and amount.")
-
-# Function to display the add goal section
-def display_add_goal_section(edit_index=None):
-    if edit_index is not None:
-        # Pre-fill the values for editing
-        goal = st.session_state.goals[edit_index]
-        goal_name = goal['goal_name']
-        goal_amount = goal['goal_amount']
-        interest_rate = goal['interest_rate']
-        monthly_contribution = goal['monthly_contribution']
-        target_year = goal['target_year']
-    else:
-        # Default values for a new goal
-        goal_name = ""
-        goal_amount = 0
-        interest_rate = 0.0
-        monthly_contribution = 0.0
-        target_year = 0
-
-    # Add goal inputs
-    goal_name = st.text_input("Name of goal", value=goal_name)
-    goal_amount = st.number_input("Goal amount", value=goal_amount, min_value=0)
-    interest_rate = st.number_input("Rate of return or interest rate (%)", value=interest_rate, min_value=0.0, max_value=100.0, step=0.1)
-    monthly_contribution = st.number_input("Monthly contribution towards this goal", value=monthly_contribution, min_value=0.0)
-    target_year = st.number_input("Target Year", value=target_year, min_value=2024)  # Adjust min_value as needed
-
-    # Update/Add Goal button
-    if edit_index is not None:
-        if st.button("Update", key="update_button"):
-            # Update the goal in the session state
-            st.session_state.goals[edit_index] = {
-                'goal_name': goal_name,
-                'goal_amount': goal_amount,
-                'interest_rate': interest_rate,
-                'monthly_contribution': monthly_contribution,
-                'target_year': target_year,
-                'goal_type': goal['goal_type']  # Preserve the goal type
-            }
-            st.success(f"Goal '{goal_name}' updated successfully.")
-    else:
-        if st.button("Add Goal to Timeline", key="add_goal_button"):
-            # Add a new goal to the session state
-            st.session_state.goals.append({
-                'goal_name': goal_name,
-                'goal_amount': goal_amount,
-                'interest_rate': interest_rate,
-                'monthly_contribution': monthly_contribution,
-                'target_year': target_year,
-                'goal_type': "Savings"  # Default value, adjust as needed
-            })
-            st.success(f"Goal '{goal_name}' added successfully.")
-
-# Manage goals section
-for index, goal in enumerate(st.session_state.goals):
-    with st.sidebar.expander(f"{goal['goal_name']} (Target Year: {goal['target_year']} or Monthly Contribution: {goal['monthly_contribution']})"):
-        st.write(f"**Goal Amount:** ${goal['goal_amount']}")
-        st.write(f"**Interest Rate:** {goal['interest_rate']}%")
-        st.write(f"**Goal Type:** {goal['goal_type']}")
-
-        # Initialize an empty dictionary for editable fields
-        editable_fields = {}
-        
-        # Edit button
-        if st.button("Edit Goal", key=f"edit_{index}"):
-            editable_fields['goal_name'] = st.text_input("Name of goal", value=goal['goal_name'], key=f"edit_name_{index}")
-            editable_fields['goal_amount'] = st.number_input("Goal amount", value=goal['goal_amount'], min_value=0, key=f"edit_amount_{index}")
-            editable_fields['interest_rate'] = st.number_input("Rate of return or interest rate (%)", value=goal['interest_rate'], min_value=0.0, max_value=100.0, step=0.1, key=f"edit_rate_{index}")
-            editable_fields['monthly_contribution'] = st.number_input("Monthly contribution towards this goal", value=goal['monthly_contribution'], min_value=0.0, key=f"edit_contribution_{index}")
-
-            # Update button
-            if st.button("Update Goal", key=f"update_{index}"):
-                # Update the goal values in the session state
-                st.session_state.goals[index]['goal_name'] = editable_fields['goal_name']
-                st.session_state.goals[index]['goal_amount'] = editable_fields['goal_amount']
-                st.session_state.goals[index]['interest_rate'] = editable_fields['interest_rate']
-                st.session_state.goals[index]['monthly_contribution'] = editable_fields['monthly_contribution']
-                st.success(f"Goal '{editable_fields['goal_name']}' updated successfully.")
-
-        # Remove button
-        if st.button("Remove Goal", key=f"remove_{index}"):
-            st.session_state.goals.pop(index)
-            st.success(f"Goal '{goal['goal_name']}' removed successfully.")
-            break  # Break to avoid index error after pop
-
 
 st.markdown("---")
 st.markdown("<h3 style='color: #2196F3;'>Outputs</h3>", unsafe_allow_html=True)
@@ -220,6 +131,31 @@ def plot_timeline(snapshot_year=None):
 # Show Timeline
 plot_timeline()
 
+# Sidebar for managing goals
+st.sidebar.header("Manage Goals")
+for goal in st.session_state.goals:
+    with st.sidebar.expander(goal['goal_name'], expanded=False):
+        st.write(f"**Goal Amount:** ${goal['goal_amount']}")
+        st.write(f"**Interest Rate:** {goal['interest_rate']}%")
+        st.write(f"**Monthly Contribution:** ${goal['monthly_contribution']}")
+        
+        # Edit button
+        if st.button(f"Edit {goal['goal_name']}"):
+            goal['editable'] = not goal['editable']
+            if goal['editable']:
+                goal_name_edit = st.sidebar.text_input("Edit Goal Name", value=goal['goal_name'])
+                new_goal_amount = st.sidebar.number_input("Edit Goal Amount", value=goal['goal_amount'], min_value=0)
+                new_interest_rate = st.sidebar.number_input("Edit Interest Rate", value=goal['interest_rate'], min_value=0.0, max_value=100.0, step=0.1)
+                new_contribution_amount = st.sidebar.number_input("Edit Monthly Contribution", value=goal['monthly_contribution'], min_value=0.0)
+                
+                if st.button("Update"):
+                    goal['goal_name'] = goal_name_edit
+                    goal['goal_amount'] = new_goal_amount
+                    goal['interest_rate'] = new_interest_rate
+                    goal['monthly_contribution'] = new_contribution_amount
+                    goal['editable'] = False
+                    st.sidebar.success(f"Goal '{goal_name_edit}' updated successfully.")
+
 # Monthly contributions section
 st.markdown("<h4>Monthly Contributions</h4>", unsafe_allow_html=True)
 total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
@@ -231,3 +167,42 @@ for goal in st.session_state.goals:
     st.write(f"- {goal['goal_name']}: ${int(round(goal['monthly_contribution']))}/month")
 
 st.write(f"**Remaining money to put towards current you:** ${remaining_for_current_you}")
+
+# Snapshot feature
+st.markdown("---")
+st.markdown("<h3 style='color: #FF5722;'>Financial Snapshot</h3>", unsafe_allow_html=True)
+
+snapshot_year = st.number_input("Enter a year for the snapshot (yyyy)", min_value=current_year, max_value=current_year + 30, value=current_year)
+snapshot_button = st.button("Show Snapshot")
+
+if snapshot_button:
+    # Calculate snapshot values
+    saved_amounts = {goal['goal_name']: 0 for goal in st.session_state.goals}
+    
+    for goal in st.session_state.goals:
+        if snapshot_year >= goal['target_year']:
+            saved_amounts[goal['goal_name']] = goal['goal_amount']
+
+    st.markdown("<h4>Snapshot for Year: " + str(snapshot_year) + "</h4>", unsafe_allow_html=True)
+
+    # Display snapshot table
+    snapshot_data = {
+        'Goal Name': saved_amounts.keys(),
+        'Amount Saved ($)': saved_amounts.values(),
+        'Progress (%)': [round((saved / goal['goal_amount'] * 100) if goal['goal_amount'] > 0 else 0) for goal, saved in zip(st.session_state.goals, saved_amounts.values())]
+    }
+    
+    snapshot_df = pd.DataFrame(snapshot_data)
+
+    # Display table
+    st.table(snapshot_df)
+
+    # Retirement section
+    total_retirement_savings = remaining_for_current_you * (snapshot_year - current_year) * 12  # Example calculation
+    st.write(f"**Estimated Retirement Savings by {snapshot_year}:** ${int(round(total_retirement_savings))}")
+
+# Clear session state button for testing purposes
+if st.button("Clear All Goals"):
+    st.session_state.goals = []
+    st.success("All goals cleared.")
+
