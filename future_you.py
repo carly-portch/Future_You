@@ -37,14 +37,14 @@ if 'goals' not in st.session_state:
 
 # Sidebar for editing goals
 st.sidebar.header("Edit Goals")
-goal_to_edit = st.sidebar.selectbox("Select a goal to edit", [""] + [goal['goal_name'] for goal in st.session_state.goals])
-
-if goal_to_edit:
+if st.session_state.goals:
+    goal_to_edit = st.sidebar.selectbox("Select a goal to edit", [goal['goal_name'] for goal in st.session_state.goals])
+    
     goal_index = next(i for i, goal in enumerate(st.session_state.goals) if goal['goal_name'] == goal_to_edit)
     goal_name = st.sidebar.text_input("Name of goal", value=st.session_state.goals[goal_index]['goal_name'])
     new_goal_amount = st.sidebar.number_input("Goal amount", value=int(round(st.session_state.goals[goal_index]['goal_amount'])), min_value=0)
     new_interest_rate = st.sidebar.number_input("Rate of return or interest rate (%)", value=st.session_state.goals[goal_index]['interest_rate'], min_value=0.0, max_value=100.0, step=0.1)
-    new_contribution_amount = st.sidebar.number_input("Monthly contribution towards this goal", value=int(round(st.session_state.goals[goal_index]['monthly_contribution'])), min_value=0.0)
+    new_contribution_amount = st.sidebar.number_input("Monthly contribution towards this goal", value=int(round(st.session_state.goals[goal_index]['monthly_contribution'])), min_value=0)
 
     if st.sidebar.button("Update Goal"):
         st.session_state.goals[goal_index]['goal_name'] = goal_name
@@ -56,7 +56,8 @@ if goal_to_edit:
     if st.sidebar.button("Delete Goal"):
         st.session_state.goals.pop(goal_index)
         st.sidebar.success(f"Goal '{goal_name}' deleted successfully.")
-        goal_to_edit = ""
+else:
+    st.sidebar.text("No goals added yet.")
 
 # Goal input form
 with st.expander("Add a Goal"):
@@ -168,4 +169,3 @@ for goal in st.session_state.goals:
     st.write(f"- {goal['goal_name']}: ${int(round(goal['monthly_contribution']))}/month")
 
 st.write(f"**Remaining money to put towards current you:** ${remaining_for_current_you}")
-
