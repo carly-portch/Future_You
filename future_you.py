@@ -54,18 +54,40 @@ def add_goal():
 
 # Button to add a new goal
 if st.button("Add a New Goal"):
-    # Initialize goal details form
+    # Initialize goal details form in session state
     st.session_state.goal_details = {
-        "goal_name": st.text_input("Name of goal"),
-        "goal_amount": st.number_input("Goal amount", min_value=0.0),
-        "interest_rate": st.number_input("Rate of return or interest rate (%)", min_value=0.0, max_value=100.0, value=5.0),
-        "goal_type": st.radio("Select how you want to calculate your goal", ["Target Year", "Monthly Contribution"]),
-        "contribution_amount": st.number_input("Monthly contribution towards this goal", min_value=0.0) if st.session_state.goal_details.get("goal_type") == "Monthly Contribution" else None,
-        "target_year": st.number_input("Target year to reach this goal (yyyy)", min_value=current_year) if st.session_state.goal_details.get("goal_type") == "Target Year" else None,
+        "goal_name": "",
+        "goal_amount": 0.0,
+        "interest_rate": 5.0,
+        "goal_type": "Target Year",
+        "contribution_amount": 0.0,
+        "target_year": current_year
     }
-    
-    if st.button("Add to Timeline"):
-        add_goal()
+
+    # Open modal for goal details input
+    with st.form("goal_form", clear_on_submit=True):
+        st.subheader("Goal Details")
+        goal_name = st.text_input("Name of goal", st.session_state.goal_details["goal_name"])
+        goal_amount = st.number_input("Goal amount", min_value=0.0, value=st.session_state.goal_details["goal_amount"])
+        interest_rate = st.number_input("Rate of return or interest rate (%)", min_value=0.0, max_value=100.0, value=st.session_state.goal_details["interest_rate"])
+        goal_type = st.radio("Select how you want to calculate your goal", ["Target Year", "Monthly Contribution"], index=0)
+        if goal_type == "Monthly Contribution":
+            contribution_amount = st.number_input("Monthly contribution towards this goal", min_value=0.0, value=st.session_state.goal_details["contribution_amount"])
+            target_year = None
+        else:
+            contribution_amount = None
+            target_year = st.number_input("Target year to reach this goal (yyyy)", min_value=current_year, value=st.session_state.goal_details["target_year"])
+
+        if st.form_submit_button("Add to Timeline"):
+            st.session_state.goal_details = {
+                "goal_name": goal_name,
+                "goal_amount": goal_amount,
+                "interest_rate": interest_rate,
+                "goal_type": goal_type,
+                "contribution_amount": contribution_amount,
+                "target_year": target_year
+            }
+            add_goal()
 
 # Plot timeline
 def plot_timeline():
