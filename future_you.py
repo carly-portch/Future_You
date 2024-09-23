@@ -11,9 +11,8 @@ st.write("Add goals such as a down payment, education, or a dream vacation. Spec
 # Initialize variables
 current_year = date.today().year
 
-# Input fields for income and expenses
+# Input field for income (expenses will now be auto-calculated)
 monthly_income = st.number_input("Enter your combined monthly income after tax", min_value=0.0)
-monthly_expenses = st.number_input("Enter your combined monthly expenses", min_value=0.0)
 
 # Initialize goal list
 if 'goals' not in st.session_state:
@@ -95,7 +94,7 @@ def plot_timeline(snapshot_year=None):
         'Year': [current_year] + [goal['target_year'] for goal in st.session_state.goals],
         'Event': ['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals],
         'Text': [
-            f"<b>Current Year:</b> {current_year}<br><b>Combined Monthly Income:</b> ${int(monthly_income)}<br><b>Monthly Expenses:</b> ${int(monthly_expenses)}"
+            f"<b>Current Year:</b> {current_year}<br><b>Combined Monthly Income:</b> ${int(monthly_income)}"
         ] + [
             f"<b>Goal:</b> {goal['goal_name']}<br><b>Amount:</b> ${int(goal['goal_amount'])}<br><b>Monthly Contribution:</b> ${int(goal['monthly_contribution'])}"
             for goal in st.session_state.goals
@@ -146,9 +145,18 @@ def plot_timeline(snapshot_year=None):
 
     st.plotly_chart(fig, use_container_width=True)
 
-# Show current monthly contribution
+# Show current total monthly contribution
 current_contribution = calculate_current_monthly_contribution()
 st.subheader(f"Current Total Monthly Contribution: ${int(current_contribution)}")
+
+# Show breakdown of monthly contributions for each goal
+st.write("### Monthly Contribution Breakdown:")
+for goal in st.session_state.goals:
+    st.write(f"- **{goal['goal_name']}:** ${int(goal['monthly_contribution'])}")
+
+# Calculate remaining money after goal contributions (monthly income - total contributions)
+remaining_money = monthly_income - current_contribution
+st.subheader(f"Remaining money to put towards current you: ${int(remaining_money)}")
 
 # Allow the user to input a snapshot year and see progress
 snapshot_year = st.number_input("Enter a snapshot year to see your progress towards each goal", min_value=current_year, value=current_year)
