@@ -92,25 +92,31 @@ for index, goal in enumerate(st.session_state.goals):
         st.write(f"**Interest Rate:** {goal['interest_rate']}%")
         st.write(f"**Goal Type:** {goal['goal_type']}")
 
+        # Initialize an empty dictionary for editable fields
+        editable_fields = {}
+        
         # Edit button
         if st.button("Edit Goal", key=f"edit_{index}"):
-            goal_name = st.text_input("Name of goal", value=goal['goal_name'], key=f"edit_name_{index}")
-            new_goal_amount = st.number_input("Goal amount", value=int(round(goal['goal_amount'])), min_value=0, key=f"edit_amount_{index}")
-            new_interest_rate = st.number_input("Rate of return or interest rate (%)", value=goal['interest_rate'], min_value=0.0, max_value=100.0, step=0.1, key=f"edit_rate_{index}")
-            new_contribution_amount = st.number_input("Monthly contribution towards this goal", value=int(round(goal['monthly_contribution'])), min_value=0.0, key=f"edit_contribution_{index}")
+            editable_fields['goal_name'] = st.text_input("Name of goal", value=goal['goal_name'], key=f"edit_name_{index}")
+            editable_fields['goal_amount'] = st.number_input("Goal amount", value=goal['goal_amount'], min_value=0, key=f"edit_amount_{index}")
+            editable_fields['interest_rate'] = st.number_input("Rate of return or interest rate (%)", value=goal['interest_rate'], min_value=0.0, max_value=100.0, step=0.1, key=f"edit_rate_{index}")
+            editable_fields['monthly_contribution'] = st.number_input("Monthly contribution towards this goal", value=goal['monthly_contribution'], min_value=0.0, key=f"edit_contribution_{index}")
 
+            # Update button
             if st.button("Update Goal", key=f"update_{index}"):
-                st.session_state.goals[index]['goal_name'] = goal_name
-                st.session_state.goals[index]['goal_amount'] = new_goal_amount
-                st.session_state.goals[index]['interest_rate'] = new_interest_rate
-                st.session_state.goals[index]['monthly_contribution'] = new_contribution_amount
-                st.success(f"Goal '{goal_name}' updated successfully.")
+                # Update the goal values in the session state
+                st.session_state.goals[index]['goal_name'] = editable_fields['goal_name']
+                st.session_state.goals[index]['goal_amount'] = editable_fields['goal_amount']
+                st.session_state.goals[index]['interest_rate'] = editable_fields['interest_rate']
+                st.session_state.goals[index]['monthly_contribution'] = editable_fields['monthly_contribution']
+                st.success(f"Goal '{editable_fields['goal_name']}' updated successfully.")
 
         # Remove button
         if st.button("Remove Goal", key=f"remove_{index}"):
             st.session_state.goals.pop(index)
             st.success(f"Goal '{goal['goal_name']}' removed successfully.")
             break  # Break to avoid index error after pop
+
 
 st.markdown("---")
 st.markdown("<h3 style='color: #2196F3;'>Outputs</h3>", unsafe_allow_html=True)
