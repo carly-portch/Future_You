@@ -73,8 +73,7 @@ with st.expander("Add a Goal"):
                 'goal_amount': round(goal_amount),  # Ensure rounding to whole number
                 'interest_rate': round(interest_rate),
                 'monthly_contribution': round(contribution_amount if contribution_amount else monthly_contribution),  # Ensure rounding to whole number
-                'target_year': target_year,
-                'editable': False  # Track if the goal is editable
+                'target_year': target_year
             })
             st.success(f"Goal '{goal_name}' added successfully.")
         else:
@@ -133,17 +132,18 @@ plot_timeline()
 
 # Sidebar for managing goals
 st.sidebar.header("Manage Goals")
-for goal in st.session_state.goals:
-    with st.sidebar.expander(goal['goal_name'], expanded=False):
-        st.write(f"**Goal Amount:** ${goal['goal_amount']}")
-        st.write(f"**Interest Rate:** {goal['interest_rate']}%")
-        st.write(f"**Monthly Contribution:** ${goal['monthly_contribution']}")
-        
-        # Delete button
-        if st.button(f"Delete {goal['goal_name']}"):
-            st.session_state.goals.remove(goal)
-            st.sidebar.success(f"Goal '{goal['goal_name']}' deleted successfully.")
-            st.experimental_rerun()  # Refresh the app
+if st.session_state.goals:
+    for index, goal in enumerate(st.session_state.goals):
+        with st.sidebar.expander(goal['goal_name'], expanded=False):
+            st.write(f"**Goal Amount:** ${goal['goal_amount']}")
+            st.write(f"**Interest Rate:** {goal['interest_rate']}%")
+            st.write(f"**Monthly Contribution:** ${goal['monthly_contribution']}")
+
+            # Delete button
+            if st.sidebar.button(f"Delete {goal['goal_name']}", key=f"delete_{index}"):
+                st.session_state.goals.pop(index)
+                st.sidebar.success(f"Goal '{goal['goal_name']}' deleted successfully.")
+                st.experimental_rerun()  # Refresh the app
 
 # Monthly contributions section
 st.markdown("<h4>Monthly Contributions</h4>", unsafe_allow_html=True)
@@ -157,3 +157,21 @@ for goal in st.session_state.goals:
     st.progress(int(progress), text=f"{goal['goal_name']}: {int(progress)}%")
 
 st.write(f"**Remaining money to put towards current you:** ${remaining_for_current_you}")
+
+# Snapshot Year Input
+st.markdown("---")
+st.markdown("<h3 style='color: #FF5722;'>Snapshot</h3>", unsafe_allow_html=True)
+snapshot_year = st.number_input("Enter the snapshot year", min_value=current_year, value=current_year)
+
+# Snapshot Button
+if st.button("Show Snapshot"):
+    # Create snapshot progress bars
+    st.markdown("### Progress Towards Goals Snapshot:")
+    for goal in st.session_state.goals:
+        progress = (goal['monthly_contribution'] / goal['goal_amount']) * 100 if goal['goal_amount'] > 0 else 0
+        st.progress(int(progress), text=f"{goal['goal_name']}: {int(progress)}%")
+
+    st.write(f"**Snapshot Year:** {snapshot_year}")
+    st.write(f"**Combined Monthly Income:** ${int(round(monthly_income))}")
+    st.write(f"**Total Monthly Contribution to All Goals:** ${total_contribution}")
+    st.write(f"**Remaining money to put towards current you:** ${remaining_for_current_you}")
