@@ -4,21 +4,38 @@ import pandas as pd
 import numpy as np
 from datetime import date
 
+# Title and Description
 st.title("Plan Your Future Together")
-st.write("This tool helps you and your partner estimate your savings and manage joint medium- and long-term goals.")
-st.write("Add goals such as a down payment, education, or a dream vacation. Specify the target year or monthly contribution. Once set, click 'Add goal to timeline' to include it in the timeline below. Use the panel to remove goals as needed.")
+st.markdown("""
+<div style='background-color: #f9f9f9; padding: 10px; border-radius: 10px;'>
+    <h4 style='text-align: center;'>This tool helps you and your partner estimate your savings and manage joint goals. 
+    Add multiple goals like a down payment, education, or a vacation.</h4>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("---")
 
 # Initialize variables
 current_year = date.today().year
 
-# Input field for income (expenses will now be auto-calculated)
+# Grouping inputs visually
+st.markdown("<h3 style='color: #4CAF50;'>Inputs</h3>", unsafe_allow_html=True)
+
+# Input fields for income
 monthly_income = st.number_input("Enter your combined monthly income after tax", min_value=0.0)
 
-# Initialize goal list
+# Goal Addition
+st.markdown("""
+<div style='padding: 10px; border: 2px dashed #4CAF50; border-radius: 10px;'>
+    <h4>Add a New Goal</h4>
+    <p>You can add multiple goals, one at a time.</p>
+</div>
+""", unsafe_allow_html=True)
+
 if 'goals' not in st.session_state:
     st.session_state.goals = []
 
-# Display goal addition dropdown
+# Goal input form
 with st.expander("Add a Goal"):
     goal_name = st.text_input("Name of goal")
     goal_amount = st.number_input("Goal amount", min_value=0.0)
@@ -51,43 +68,25 @@ with st.expander("Add a Goal"):
                 else:
                     monthly_contribution = goal_amount / months_to_goal
 
-            # Append goal to session state
             st.session_state.goals.append({
                 'goal_name': goal_name,
                 'goal_amount': goal_amount,
                 'monthly_contribution': contribution_amount if contribution_amount else monthly_contribution,
                 'target_year': target_year
             })
-
             st.success(f"Goal '{goal_name}' added successfully.")
         else:
             st.error("Please enter a valid goal name and amount.")
 
-# Calculate total monthly contribution for current snapshot
-def calculate_current_monthly_contribution():
-    total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
-    return total_contribution
+st.markdown("---")
+st.markdown("<h3 style='color: #2196F3;'>Outputs</h3>", unsafe_allow_html=True)
 
-# Calculate progress towards each goal for a given snapshot year
-def calculate_goal_progress(snapshot_year):
-    progress = []
-    for goal in st.session_state.goals:
-        years_to_snapshot = snapshot_year - current_year
-        total_months = 12 * (goal['target_year'] - current_year)
-        months_saved = 12 * years_to_snapshot
-        amount_saved = min(goal['goal_amount'], (months_saved / total_months) * goal['goal_amount'])
-        progress.append((goal['goal_name'], amount_saved, goal['goal_amount']))
-    return progress
+# Timeline section
+st.markdown("<h4>Joint Life Timeline</h4>", unsafe_allow_html=True)
 
-# Plot timeline
 def plot_timeline(snapshot_year=None):
-    current_year = date.today().year
-    
     # Get latest goal year for timeline end
-    if st.session_state.goals:
-        latest_year = max(goal['target_year'] for goal in st.session_state.goals)
-    else:
-        latest_year = current_year
+    latest_year = max(goal['target_year'] for goal in st.session_state.goals) if st.session_state.goals else current_year
 
     # Create timeline data
     timeline_data = {
@@ -100,10 +99,8 @@ def plot_timeline(snapshot_year=None):
             for goal in st.session_state.goals
         ]
     }
-
     timeline_df = pd.DataFrame(timeline_data)
 
-    # Create the figure
     fig = go.Figure()
     
     # Add red dots for current year and goals
@@ -126,46 +123,24 @@ def plot_timeline(snapshot_year=None):
         line=dict(color='red', width=2)
     ))
 
-    # Add a vertical line for the selected snapshot year if provided
-    if snapshot_year is not None:
+    # Add vertical line for snapshot year
+    if snapshot_year:
         fig.add_vline(x=snapshot_year, line_color="blue", line_width=2, annotation_text="Snapshot Year", annotation_position="top right")
-    
-    # Update layout
-    fig.update_layout(
-        title="Joint Life Timeline",
-        xaxis_title='Year',
-        yaxis=dict(visible=False),
-        xaxis=dict(
-            tickmode='array',
-            tickvals=[current_year] + [goal['target_year'] for goal in st.session_state.goals],
-            ticktext=[f"{current_year}"] + [f"{goal['target_year']}" for goal in st.session_state.goals]
-        ),
-        showlegend=False
-    )
 
+    fig.update_layout(title="Joint Life Timeline", xaxis_title='Year', yaxis=dict(visible=False))
     st.plotly_chart(fig, use_container_width=True)
 
-# Show current total monthly contribution
-current_contribution = calculate_current_monthly_contribution()
-st.subheader(f"Current Total Monthly Contribution: ${int(current_contribution)}")
+# Show Timeline
+plot_timeline()
 
-# Show breakdown of monthly contributions for each goal
-st.write("### Monthly Contribution Breakdown:")
+# Monthly contributions section
+st.markdown("<h4>Monthly Contributions</h4>", unsafe_allow_html=True)
+total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
+remaining_for_current_you = monthly_income - total_contribution
+
+st.write(f"**Total Monthly Contribution to All Goals:** ${total_contribution}")
+st.markdown("### Breakdown:")
 for goal in st.session_state.goals:
-    st.write(f"- **{goal['goal_name']}:** ${int(goal['monthly_contribution'])}")
+    st.write(f"- {goal['goal_name']}: ${goal['monthly_contribution']}/month")
 
-# Calculate remaining money after goal contributions (monthly income - total contributions)
-remaining_money = monthly_income - current_contribution
-st.subheader(f"Remaining money to put towards current you: ${int(remaining_money)}")
-
-# Allow the user to input a snapshot year and see progress
-snapshot_year = st.number_input("Enter a snapshot year to see your progress towards each goal", min_value=current_year, value=current_year)
-if st.button("Show Progress"):
-    progress_data = calculate_goal_progress(snapshot_year)
-    for goal_name, amount_saved, goal_amount in progress_data:
-        st.write(f"Goal: {goal_name}")
-        st.progress(amount_saved / goal_amount)
-        st.write(f"${int(amount_saved)} saved out of ${int(goal_amount)}")
-
-# Plot timeline with the current state
-plot_timeline(snapshot_year)
+st.write(f"**Remaining money to put towards current you:** ${remaining_for_current_you}", unsafe_allow_html=True)
