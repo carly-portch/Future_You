@@ -81,6 +81,28 @@ with st.expander("Add a Goal"):
 st.markdown("---")
 st.markdown("<h3 style='color: #2196F3;'>Outputs</h3>", unsafe_allow_html=True)
 
+# Sidebar for managing goals
+st.sidebar.title("Manage Goals")
+selected_goal = st.sidebar.selectbox("Select a goal to update or delete", options=[goal['goal_name'] for goal in st.session_state.goals])
+
+if selected_goal:
+    goal_to_edit = next(goal for goal in st.session_state.goals if goal['goal_name'] == selected_goal)
+    
+    with st.sidebar.form(key='edit_goal_form'):
+        new_goal_amount = st.number_input("Goal amount", value=int(goal_to_edit['goal_amount']), min_value=0.0)
+        new_monthly_contribution = st.number_input("Monthly contribution towards this goal", value=int(goal_to_edit['monthly_contribution']), min_value=0.0)
+        new_target_year = st.number_input("Target year", value=goal_to_edit['target_year'], min_value=current_year)
+        
+        if st.form_submit_button("Update Goal"):
+            goal_to_edit['goal_amount'] = new_goal_amount
+            goal_to_edit['monthly_contribution'] = new_monthly_contribution
+            goal_to_edit['target_year'] = new_target_year
+            st.sidebar.success("Goal updated successfully.")
+
+        if st.sidebar.button("Delete Goal"):
+            st.session_state.goals.remove(goal_to_edit)
+            st.sidebar.success("Goal deleted successfully.")
+
 # Timeline section
 st.markdown("<h4>Joint Life Timeline</h4>", unsafe_allow_html=True)
 
@@ -93,9 +115,9 @@ def plot_timeline(snapshot_year=None):
         'Year': [current_year] + [goal['target_year'] for goal in st.session_state.goals],
         'Event': ['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals],
         'Text': [
-            f"<b>Current Year:</b> {current_year}<br><b>Combined Monthly Income:</b> ${int(monthly_income)}"
+            f"<b>Current Year:</b> {current_year}<br><b>Combined Monthly Income:</b> ${int(round(monthly_income))}"
         ] + [
-            f"<b>Goal:</b> {goal['goal_name']}<br><b>Amount:</b> ${int(goal['goal_amount'])}<br><b>Monthly Contribution:</b> ${int(goal['monthly_contribution'])}"
+            f"<b>Goal:</b> {goal['goal_name']}<br><b>Amount:</b> ${int(round(goal['goal_amount']))}<br><b>Monthly Contribution:</b> ${int(round(goal['monthly_contribution']))}"
             for goal in st.session_state.goals
         ]
     }
@@ -138,9 +160,9 @@ st.markdown("<h4>Monthly Contributions</h4>", unsafe_allow_html=True)
 total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
 remaining_for_current_you = monthly_income - total_contribution
 
-st.write(f"**Total Monthly Contribution to All Goals:** ${total_contribution}")
+st.write(f"**Total Monthly Contribution to All Goals:** ${int(round(total_contribution))}")
 st.markdown("### Breakdown:")
 for goal in st.session_state.goals:
-    st.write(f"- {goal['goal_name']}: ${goal['monthly_contribution']}/month")
+    st.write(f"- {goal['goal_name']}: ${int(round(goal['monthly_contribution']))}/month")
 
-st.write(f"**Remaining money to put towards current you:** ${remaining_for_current_you}", unsafe_allow_html=True)
+st.write(f"**Remaining money to put towards current you:** ${int(round(remaining_for_current_you))}", unsafe_allow_html=True)
