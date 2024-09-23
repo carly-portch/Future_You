@@ -64,6 +64,22 @@ with st.expander("Add a Goal"):
         else:
             st.error("Please enter a valid goal name and amount.")
 
+# Calculate total monthly contribution for current snapshot
+def calculate_current_monthly_contribution():
+    total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
+    return total_contribution
+
+# Calculate progress towards each goal for a given snapshot year
+def calculate_goal_progress(snapshot_year):
+    progress = []
+    for goal in st.session_state.goals:
+        years_to_snapshot = snapshot_year - current_year
+        total_months = 12 * (goal['target_year'] - current_year)
+        months_saved = 12 * years_to_snapshot
+        amount_saved = min(goal['goal_amount'], (months_saved / total_months) * goal['goal_amount'])
+        progress.append((goal['goal_name'], amount_saved, goal['goal_amount']))
+    return progress
+
 # Plot timeline
 def plot_timeline(snapshot_year=None):
     current_year = date.today().year
@@ -130,14 +146,18 @@ def plot_timeline(snapshot_year=None):
 
     st.plotly_chart(fig, use_container_width=True)
 
-# Display existing goals in the sidebar
-st.sidebar.header("Existing Goals")
-goal_to_remove = st.sidebar.selectbox("Select a goal to remove", [""] + [goal['goal_name'] for goal in st.session_state.goals])
+# Show current monthly contribution
+current_contribution = calculate_current_monthly_contribution()
+st.subheader(f"Current Total Monthly Contribution: ${int(current_contribution)}")
 
-if st.sidebar.button("Remove Goal"):
-    if goal_to_remove:
-        st.session_state.goals = [goal for goal in st.session_state.goals if goal['goal_name'] != goal_to_remove]
-        st.sidebar.success(f"Goal '{goal_to_remove}' removed successfully.")
+# Allow the user to input a snapshot year and see progress
+snapshot_year = st.number_input("Enter a snapshot year to see your progress towards each goal", min_value=current_year, value=current_year)
+if st.button("Show Progress"):
+    progress_data = calculate_goal_progress(snapshot_year)
+    for goal_name, amount_saved, goal_amount in progress_data:
+        st.write(f"Goal: {goal_name}")
+        st.progress(amount_saved / goal_amount)
+        st.write(f"${int(amount_saved)} saved out of ${int(goal_amount)}")
 
 # Plot timeline with the current state
-plot_timeline()
+plot_timeline(snapshot_year)
