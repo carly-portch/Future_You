@@ -1,113 +1,86 @@
 import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
-import numpy as np
 from datetime import date
+import numpy as np
 
+# Set the title and description of the app
 st.title("Plan Your Future Together")
 st.write("This tool helps you and your partner estimate your savings and manage joint medium- and long-term goals.")
 st.write("Add goals such as a down payment, education, or a dream vacation. Specify the target year or monthly contribution.")
 
-# Initialize variables
+# Initialize current year
 current_year = date.today().year
 
-# Input fields for income
+# Input field for combined monthly income
 monthly_income = st.number_input("Enter your combined monthly income after tax", min_value=0.0)
 
-# Initialize goal list and goal details
+# Initialize session state for goals and goal details
 if 'goals' not in st.session_state:
     st.session_state.goals = []
-if 'goal_details' not in st.session_state:
-    st.session_state.goal_details = {}
 
 # Function to add new goal
 def add_goal(goal_name, goal_amount, interest_rate, goal_type, contribution_amount, target_year):
     if goal_name and goal_amount > 0:
         if goal_type == "Monthly Contribution":
             target_year = current_year + int(np.ceil(goal_amount / contribution_amount))
-        elif goal_type == "Target Year":
+        else:  # Target Year
             months_to_goal = 12 * (target_year - current_year)
             rate_of_return_monthly = interest_rate / 100 / 12
             if rate_of_return_monthly > 0:
                 monthly_contribution = goal_amount * rate_of_return_monthly / ((1 + rate_of_return_monthly) ** months_to_goal - 1)
             else:
                 monthly_contribution = goal_amount / months_to_goal
-        else:
-            monthly_contribution = contribution_amount
 
-        # Append goal to session state
+        # Append the goal to the session state
         st.session_state.goals.append({
             'goal_name': goal_name,
             'goal_amount': round(goal_amount),
             'monthly_contribution': round(monthly_contribution),
-            'target_year': target_year
+            'target_year': target_year,
+            'interest_rate': interest_rate,
+            'goal_type': goal_type
         })
 
         st.success(f"Goal '{goal_name}' added successfully.")
 
-# Button to add a new goal
-if st.button("Add a New Goal"):
-    # Open modal for goal details input
-    with st.form("goal_form", clear_on_submit=True):
-        st.subheader("Goal Details")
-        goal_name = st.text_input("Name of goal", "")
-        goal_amount = st.number_input("Goal amount", min_value=0.0)
-        interest_rate = st.number_input("Rate of return or interest rate (%)", min_value=0.0, max_value=100.0, value=5.0)
-        goal_type = st.radio("Select how you want to calculate your goal", ["Target Year", "Monthly Contribution"], index=0)
-        if goal_type == "Monthly Contribution":
-            contribution_amount = st.number_input("Monthly contribution towards this goal", min_value=0.0)
-            target_year = None
-        else:
-            contribution_amount = None
-            target_year = st.number_input("Target year to reach this goal (yyyy)", min_value=current_year, value=current_year)
-
-        if st.form_submit_button("Add to Timeline"):
-            add_goal(goal_name, goal_amount, interest_rate, goal_type, contribution_amount, target_year)
-
-# Plot timeline
+# Function to plot the timeline
 def plot_timeline():
-    current_year = date.today().year
-    
-    # Get latest goal year for timeline end
     if st.session_state.goals:
         latest_year = max(goal['target_year'] for goal in st.session_state.goals)
     else:
         latest_year = current_year
 
-    # Create timeline data
     timeline_data = {
         'Year': [current_year] + [goal['target_year'] for goal in st.session_state.goals],
         'Event': ['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals],
         'Text': [
             f"<b>Current Year:</b> {current_year}<br><b>Combined Monthly Income:</b> ${round(monthly_income)}<br><b>Remaining money to put towards current you:</b> ${round(monthly_income - sum(goal['monthly_contribution'] for goal in st.session_state.goals))}"
         ] + [
-            f"<b>Goal:</b> {goal['goal_name']}<br><b>Amount:</b> ${round(goal['goal_amount'])}<br><b>Monthly Contribution:</b> ${round(goal['monthly_contribution'])}"
+            f"<b>Goal:</b> {goal['goal_name']}<br><b>Amount:</b> ${goal['goal_amount']}<br><b>Monthly Contribution:</b> ${goal['monthly_contribution']}"
             for goal in st.session_state.goals
         ]
     }
 
-    timeline_df = pd.DataFrame(timeline_data)
-
-    # Create the figure
+    # Create the timeline figure
     fig = go.Figure()
     
-    # Add red dots for current year and goals
     fig.add_trace(go.Scatter(
-        x=[current_year] + [goal['target_year'] for goal in st.session_state.goals], 
-        y=[0] * (1 + len(st.session_state.goals)), 
-        mode='markers+text', 
-        marker=dict(size=12, color='red', line=dict(width=2, color='black')), 
-        text=['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals], 
-        textposition='top center', 
-        hoverinfo='text', 
-        hovertext=timeline_df['Text']
+        x=[current_year] + [goal['target_year'] for goal in st.session_state.goals],
+        y=[0] * (1 + len(st.session_state.goals)),
+        mode='markers+text',
+        marker=dict(size=12, color='red', line=dict(width=2, color='black')),
+        text=['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals],
+        textposition='top center',
+        hoverinfo='text',
+        hovertext=timeline_data['Text']
     ))
-    
-    # Add line connecting the red dots
+
+    # Add line connecting the markers
     fig.add_trace(go.Scatter(
-        x=[current_year] + [goal['target_year'] for goal in st.session_state.goals], 
-        y=[0] * (1 + len(st.session_state.goals)), 
-        mode='lines', 
+        x=[current_year] + [goal['target_year'] for goal in st.session_state.goals],
+        y=[0] * (1 + len(st.session_state.goals)),
+        mode='lines',
         line=dict(color='red', width=2)
     ))
 
@@ -126,7 +99,25 @@ def plot_timeline():
 
     st.plotly_chart(fig, use_container_width=True)
 
-# Display existing goals
+# Button to add a new goal
+if st.button("Add a New Goal"):
+    with st.form("goal_form"):
+        st.subheader("Goal Details")
+        goal_name = st.text_input("Name of goal", "")
+        goal_amount = st.number_input("Goal amount", min_value=0.0)
+        interest_rate = st.number_input("Rate of return or interest rate (%)", min_value=0.0, max_value=100.0, value=5.0)
+        goal_type = st.radio("Select how you want to calculate your goal", ["Target Year", "Monthly Contribution"], index=0)
+        if goal_type == "Monthly Contribution":
+            contribution_amount = st.number_input("Monthly contribution towards this goal", min_value=0.0)
+            target_year = None
+        else:
+            contribution_amount = None
+            target_year = st.number_input("Target year to reach this goal (yyyy)", min_value=current_year, value=current_year)
+
+        if st.form_submit_button("Add to Timeline"):
+            add_goal(goal_name, goal_amount, interest_rate, goal_type, contribution_amount, target_year)
+
+# Sidebar to display existing goals
 st.sidebar.header("Existing Goals")
 for idx, goal in enumerate(st.session_state.goals):
     with st.sidebar.expander(goal['goal_name'], expanded=True):
@@ -138,9 +129,9 @@ for idx, goal in enumerate(st.session_state.goals):
             goal_details = {
                 "goal_name": st.text_input("Name of goal", goal['goal_name']),
                 "goal_amount": st.number_input("Goal amount", min_value=0.0, value=goal['goal_amount']),
-                "interest_rate": st.number_input("Rate of return or interest rate (%)", min_value=0.0, max_value=100.0, value=goal.get('interest_rate', 5.0)),
-                "goal_type": st.radio("Select how you want to calculate your goal", ["Target Year", "Monthly Contribution"], index=["Target Year", "Monthly Contribution"].index(goal.get('goal_type', "Target Year"))),
-                "contribution_amount": st.number_input("Monthly contribution towards this goal", min_value=0.0) if goal.get('goal_type', "Target Year") == "Monthly Contribution" else None,
+                "interest_rate": st.number_input("Rate of return or interest rate (%)", min_value=0.0, max_value=100.0, value=goal['interest_rate']),
+                "goal_type": st.radio("Select how you want to calculate your goal", ["Target Year", "Monthly Contribution"], index=["Target Year", "Monthly Contribution"].index(goal['goal_type'])),
+                "contribution_amount": st.number_input("Monthly contribution towards this goal", min_value=0.0) if goal['goal_type'] == "Monthly Contribution" else None,
                 "target_year": st.number_input("Target year to reach this goal (yyyy)", min_value=current_year, value=goal['target_year']),
             }
             if st.button("Update Goal"):
@@ -148,8 +139,10 @@ for idx, goal in enumerate(st.session_state.goals):
                 st.session_state.goals[idx] = {
                     'goal_name': goal_details['goal_name'],
                     'goal_amount': round(goal_details['goal_amount']),
-                    'monthly_contribution': round(goal_details['contribution_amount']) if goal_details['contribution_amount'] else goal['monthly_contribution'],
-                    'target_year': goal_details['target_year']
+                    'monthly_contribution': round(goal_details['contribution_amount']) if goal_details['goal_type'] == "Monthly Contribution" else goal['monthly_contribution'],
+                    'target_year': goal_details['target_year'],
+                    'interest_rate': goal_details['interest_rate'],
+                    'goal_type': goal_details['goal_type']
                 }
                 st.success(f"Goal '{goal_details['goal_name']}' updated successfully.")
 
@@ -159,5 +152,5 @@ for idx, goal in enumerate(st.session_state.goals):
             st.sidebar.success(f"Goal '{goal['goal_name']}' removed successfully.")
             break
 
-# Plot timeline with the current state
+# Plot the timeline with the current state
 plot_timeline()
