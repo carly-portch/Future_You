@@ -14,9 +14,11 @@ current_year = date.today().year
 # Input fields for income
 monthly_income = st.number_input("Enter your combined monthly income after tax", min_value=0.0)
 
-# Initialize goal list
+# Initialize goal list and goal details
 if 'goals' not in st.session_state:
     st.session_state.goals = []
+if 'goal_details' not in st.session_state:
+    st.session_state.goal_details = {}
 
 # Function to add new goal
 def add_goal():
@@ -48,10 +50,11 @@ def add_goal():
         })
 
         st.success(f"Goal '{goal_name}' added successfully.")
-        st.session_state.goal_details = {}
+        st.session_state.goal_details = {}  # Reset goal details after adding
 
 # Button to add a new goal
 if st.button("Add a New Goal"):
+    # Initialize goal details form
     st.session_state.goal_details = {
         "goal_name": st.text_input("Name of goal"),
         "goal_amount": st.number_input("Goal amount", min_value=0.0),
@@ -148,7 +151,7 @@ for idx, goal in enumerate(st.session_state.goals):
                 st.session_state.goals[idx] = {
                     'goal_name': goal_details['goal_name'],
                     'goal_amount': round(goal_details['goal_amount']),
-                    'monthly_contribution': round(goal_details['contribution_amount']) if goal_details['contribution_amount'] else goal_details['monthly_contribution'],
+                    'monthly_contribution': round(goal_details['contribution_amount']) if goal_details['contribution_amount'] else goal['monthly_contribution'],
                     'target_year': goal_details['target_year']
                 }
                 st.success(f"Goal '{goal_details['goal_name']}' updated successfully.")
