@@ -85,21 +85,26 @@ st.markdown("<h3 style='color: #2196F3;'>Outputs</h3>", unsafe_allow_html=True)
 # Sidebar for goal management
 st.sidebar.markdown("<h3 style='color: #4CAF50;'>Manage Goals</h3>", unsafe_allow_html=True)
 
-for index, goal in enumerate(st.session_state.goals):
-    st.sidebar.markdown(f"**{goal['goal_name']}**")
-    new_goal_amount = st.sidebar.number_input("Goal amount", value=goal['goal_amount'], min_value=0.0, key=f"goal_amount_{index}")
-    new_interest_rate = st.sidebar.number_input("Rate of return or interest rate (%)", value=goal['interest_rate'], min_value=0.0, max_value=100.0, step=0.1, key=f"interest_rate_{index}")
-    
-    # Update or Delete buttons
-    if st.sidebar.button(f"Update Goal {index + 1}"):
-        goal['goal_amount'] = round(new_goal_amount)
-        goal['interest_rate'] = round(new_interest_rate)
-        st.success(f"Goal '{goal['goal_name']}' updated successfully.")
+# Ensure goal values are displayed correctly
+if st.session_state.goals:
+    for index, goal in enumerate(st.session_state.goals):
+        st.sidebar.markdown(f"**{goal['goal_name']}**")
+        
+        # Correctly retrieve input values
+        new_goal_amount = st.sidebar.number_input("Goal amount", value=goal['goal_amount'], min_value=0.0, key=f"goal_amount_{index}")
+        new_interest_rate = st.sidebar.number_input("Rate of return or interest rate (%)", value=goal['interest_rate'], min_value=0.0, max_value=100.0, step=0.1, key=f"interest_rate_{index}")
+        
+        # Update or Delete buttons
+        if st.sidebar.button(f"Update Goal {index + 1}"):
+            # Update the goal with new values
+            st.session_state.goals[index]['goal_amount'] = round(new_goal_amount)
+            st.session_state.goals[index]['interest_rate'] = round(new_interest_rate)
+            st.success(f"Goal '{goal['goal_name']}' updated successfully.")
 
-    if st.sidebar.button(f"Delete Goal {index + 1}"):
-        del st.session_state.goals[index]
-        st.sidebar.success(f"Goal '{goal['goal_name']}' deleted successfully.")
-        break  # Exit the loop since the list has changed
+        if st.sidebar.button(f"Delete Goal {index + 1}"):
+            del st.session_state.goals[index]
+            st.sidebar.success(f"Goal '{goal['goal_name']}' deleted successfully.")
+            break  # Exit the loop since the list has changed
 
 # Timeline section
 st.markdown("<h4>Joint Life Timeline</h4>", unsafe_allow_html=True)
