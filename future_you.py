@@ -21,7 +21,7 @@ with col1:
     st.subheader("Input Section")
 
     monthly_income = st.number_input("Enter your combined monthly income after tax", min_value=0.0)
-    
+
     st.write("### Add and manage your goals below:")
 
     if 'goals' not in st.session_state:
@@ -37,16 +37,19 @@ with col1:
                 # Option to delete the goal
                 if st.button(f"Remove Goal '{goal['goal_name']}'", key=f"remove_goal_{idx}"):
                     st.session_state.goals.pop(idx)
-                    st.experimental_rerun()
+                    st.experimental_rerun()  # Trigger a rerun to update the view
 
     st.write("---")
 
     # Add goal button expands into form
-    with st.expander("Add a New Goal", expanded=False):
+    with st.expander("Add a New Goal", expanded=True):  # Keep it expanded for editing
         goal_name = st.text_input("Name of goal")
         goal_amount = st.number_input("Goal amount", min_value=0.0)
         interest_rate = st.number_input("Rate of return or interest rate (%)", min_value=0.0, max_value=100.0, value=5.0)
         goal_type = st.radio("Select how you want to calculate your goal", ["Target Year", "Monthly Contribution"])
+
+        contribution_amount = 0
+        target_year = current_year  # Default target year for calculation
 
         if goal_type == "Monthly Contribution":
             contribution_amount = st.number_input("Monthly contribution towards this goal", min_value=0.0)
@@ -59,33 +62,40 @@ with col1:
                     target_year = current_year + int(goal_amount / contribution_amount // 12)
         elif goal_type == "Target Year":
             target_year = st.number_input("Target year to reach this goal (yyyy)", min_value=current_year)
-            contribution_amount = None
+            if target_year > current_year:
+                months_to_goal = 12 * (target_year - current_year)
+                rate_of_return_monthly = interest_rate / 100 / 12
+                if rate_of_return_monthly > 0:
+                    contribution_amount = goal_amount * rate_of_return_monthly / ((1 + rate_of_return_monthly) ** months_to_goal - 1)
+                else:
+                    contribution_amount = goal_amount / months_to_goal
 
+        # Button to add the goal
         if st.button("Add goal to timeline"):
             if goal_name and goal_amount > 0:
-                if goal_type == "Monthly Contribution":
-                    target_year = int(target_year)
-                elif goal_type == "Target Year":
-                    months_to_goal = 12 * (target_year - current_year)
-                    rate_of_return_monthly = interest_rate / 100 / 12
-                    if rate_of_return_monthly > 0:
-                        monthly_contribution = goal_amount * rate_of_return_monthly / ((1 + rate_of_return_monthly) ** months_to_goal - 1)
-                    else:
-                        monthly_contribution = goal_amount / months_to_goal
-
-                st.session_state.goals.append({
+                # Store the new goal in session state
+                new_goal = {
                     'goal_name': goal_name,
                     'goal_amount': goal_amount,
-                    'monthly_contribution': contribution_amount if contribution_amount else monthly_contribution,
+                    'monthly_contribution': contribution_amount,
                     'target_year': target_year
-                })
-                st.experimental_rerun()
+                }
+                st.session_state.goals.append(new_goal)
+                st.success(f"Added goal: {goal_name}")  # Feedback for successful addition
+                
+                # Avoid using experimental rerun immediately to mitigate errors
+                st.session_state.goal_name = goal_name
+                st.session_state.goal_amount = goal_amount
+                st.session_state.interest_rate = interest_rate
+                st.session_state.goal_type = goal_type
+                st.session_state.contribution_amount = contribution_amount
+                st.session_state.target_year = target_year
 
-# Outputs on the right (col2)
+    # Outputs on the right (col2)
 with col2:
     st.subheader("Timeline and Contributions")
 
-    def plot_timeline(snapshot_year=None):
+    def plot_timeline():
         current_year = date.today().year
 
         if st.session_state.goals:
@@ -125,9 +135,6 @@ with col2:
             mode='lines',
             line=dict(color='red', width=2)
         ))
-
-        if snapshot_year:
-            fig.add_vline(x=snapshot_year, line_color="blue", line_width=2, annotation_text="Snapshot Year", annotation_position="top right")
 
         fig.update_layout(
             title="Joint Life Timeline",
