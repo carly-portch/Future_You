@@ -108,10 +108,7 @@ body {
     visibility: visible;
     opacity: 1;
 }
-</style>
-""", unsafe_allow_html=True)
 
-/* Add this to your CSS */
 .info-icon {
     display: inline-block;
     font-size: 14px;
@@ -119,11 +116,6 @@ body {
     margin-left: 5px;
     cursor: pointer;
     vertical-align: middle;
-}
-
-.tooltip {
-    display: inline-block;
-    position: relative;
 }
 
 .tooltip:hover .info-icon {
@@ -134,7 +126,8 @@ body {
     visibility: visible;
     opacity: 1;
 }
-
+</style>
+""", unsafe_allow_html=True)
 
 # Title and Description
 st.markdown("<h1 class='title'>The Future You Tool</h1>", unsafe_allow_html=True)
@@ -266,50 +259,29 @@ elif goal_type == "Target Year":
 
 # Add goal button
 if st.button("Add goal to timeline"):
-    if goal_name and goal_amount > 0 and current_savings >= 0:
-        if goal_type == "Monthly Contribution":
-            if contribution_amount is None or contribution_amount <= 0:
-                st.error("Please enter a valid monthly contribution amount.")
-                st.stop()
-            target_year = int(target_year)
-            monthly_contribution = contribution_amount
-        elif goal_type == "Target Year":
-            if target_year <= current_year:
-                st.error("Target year must be in the future.")
-                st.stop()
-            monthly_contribution = (goal_amount - current_savings) / ((target_year - current_year) * 12)
-            monthly_contribution = int(round(monthly_contribution))
-
-        goal = {
+    if goal_name and goal_amount > 0:
+        new_goal = {
             'goal_name': goal_name,
             'goal_amount': int(round(goal_amount)),
             'current_savings': int(round(current_savings)),
-            'interest_rate': interest_rate,
-            'monthly_contribution': monthly_contribution,
+            'interest_rate': int(round(interest_rate)),
+            'monthly_contribution': int(round(contribution_amount)) if contribution_amount else None,
             'target_year': target_year,
             'goal_type': goal_type
         }
-        st.session_state.goals.append(goal)
-        st.success(f"{goal_name} has been added to your goals!")
+        st.session_state.goals.append(new_goal)
+        st.success(f"Goal '{goal_name}' added!")
 
 # Display Goals
+st.markdown("<h2 class='section-header'>Your Goals</h2>", unsafe_allow_html=True)
 if st.session_state.goals:
-    st.markdown("<h2 class='section-header'>Goals Overview</h2>", unsafe_allow_html=True)
-    for idx, goal in enumerate(st.session_state.goals):
-        st.markdown(f"**Goal Name:** {goal['goal_name']}")
-        st.markdown(f"**Goal Amount:** ${goal['goal_amount']}")
-        st.markdown(f"**Current Savings:** ${goal['current_savings']}")
-        st.markdown(f"**Interest Rate:** {goal['interest_rate']}%")
-        st.markdown(f"**Monthly Contribution:** ${goal['monthly_contribution']}")
-        st.markdown(f"**Target Year:** {goal['target_year']}")
-        st.markdown("---")
+    for i, goal in enumerate(st.session_state.goals):
+        st.write(f"{goal['goal_name']}: ${goal['goal_amount']} (Current savings: ${goal['current_savings']}, Interest rate: {goal['interest_rate']}%)")
+else:
+    st.write("No goals added yet.")
 
-# Placeholder for future development (e.g., visualization)
-# Here you can add code for visualizations using Plotly or other libraries
-
-# Footer
-st.markdown("""
-<div style='text-align: center;'>
-    <small>Developed by Carly</small>
-</div>
-""", unsafe_allow_html=True)
+# Button to clear all goals
+if st.button("Clear All Goals"):
+    st.session_state.goals = []
+    st.session_state.retirement_goal_added = False
+    st.success("All goals have been cleared!")
