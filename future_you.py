@@ -466,6 +466,7 @@ def plot_timeline():
 # Show Timeline
 plot_timeline()
 
+
 # Monthly Contribution Results Section
 # Check if goals exist in session state
 if 'goals' in st.session_state and st.session_state.goals:
@@ -478,27 +479,26 @@ if 'goals' in st.session_state and st.session_state.goals:
     # Display the Monthly Breakdown header
     st.markdown("<h2>Monthly Breakdown</h2>", unsafe_allow_html=True)
 
-    # Display the total contribution to goals
-    st.markdown(f"""
-        <h3 style='color: #1E90FF;'>Monthly Contributions Towards Goals:</h3>
-        <h4 style='color: #1E90FF;'>Total Monthly Contribution to All Goals: <b>${int(round(total_contribution))}</b></h4>
-        <ul>
-    """, unsafe_allow_html=True)
+    # Display the subheader for contributions towards goals
+    st.markdown(f"<h3 style='color: #1E90FF;'>Monthly Contributions Towards Goals:</h3>", unsafe_allow_html=True)
 
-    # Loop through the goals and include them directly under the total contributions number
+    # Loop through the goals and include them in the list
+    st.markdown("<ul>", unsafe_allow_html=True)
     for goal in st.session_state.goals:
         st.markdown(f"<li><b>{goal['goal_name']}:</b> ${int(round(goal['monthly_contribution']))}/month</li>", unsafe_allow_html=True)
+    st.markdown("</ul>", unsafe_allow_html=True)
 
-    # Close the unordered list and display the remaining money section
+    # Display the total monthly contribution
+    st.markdown(f"<h4 style='color: #1E90FF;'>Total Monthly Contribution: <b>${int(round(total_contribution))}</b></h4>", unsafe_allow_html=True)
+
+    # Display the remaining money section
     st.markdown(f"""
-        </ul>
         <h3 style='color: #1E90FF;'>Remaining money to put towards current you:</h3>
-        <div style='border: 2px solid red; background-color: rgba(255, 0, 0, 0.2); padding: 10px; border-radius: 5px;'>
-            <b>${int(round(remaining_for_current_you))}</b>
-        </div>
+        <h4><b>${int(round(remaining_for_current_you))}</b></h4>
     """, unsafe_allow_html=True)
 
 else:
     # Add a thick horizontal line for no goals message
     st.markdown("<hr style='height: 4px; background-color: black;'>", unsafe_allow_html=True)
     st.markdown("<h3>No goals have been added yet.</h3>", unsafe_allow_html=True)
+
