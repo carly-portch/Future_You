@@ -474,27 +474,28 @@ if 'goals' in st.session_state and st.session_state.goals:
 
     # Display the "Monthly Breakdown" title outside of the box
     st.markdown(f"""
-    <h4 style='color: #1E90FF;'>Monthly Breakdown:</h4>
+    <h4 style='color:'black';'>Monthly Breakdown:</h4>
     """, unsafe_allow_html=True)
 
-    # Create the box to include the total contribution, list of goals, and remaining money
-    st.markdown(f"""
+# Create the box to include the total contribution, list of goals, and remaining money
+st.markdown(f"""
     <div style='border: 2px solid #4CAF50; padding: 10px; border-radius: 10px;'>
         <h3 style='color: #1E90FF;'>Total Monthly Contribution to All Goals: <b>${int(round(total_contribution))}</b></h3>
         <h4>Breakdown:</h4>
         <ul>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-    # Loop through the goals and include them within the box
-    for goal in st.session_state.goals:
-        st.markdown(f"<li><b>{goal['goal_name']}:</b> ${int(round(goal['monthly_contribution']))}/month</li>", unsafe_allow_html=True)
+# Loop through the goals and include them within the box
+for goal in st.session_state.goals:
+    st.markdown(f"<li><b>{goal['goal_name']}:</b> ${int(round(goal['monthly_contribution']))}/month</li>", unsafe_allow_html=True)
 
-    # Continue the box and include the remaining money section
-    st.markdown(f"""
+# Close the unordered list and continue the box to include the remaining money section
+st.markdown(f"""
         </ul>
         <h3 style='color: #1E90FF;'>Remaining money to put towards current you: <b>${int(round(remaining_for_current_you))}</b></h3>
     </div>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
+
 
 else:
     st.write("No goals have been added yet.")
