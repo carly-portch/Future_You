@@ -467,6 +467,12 @@ def plot_timeline():
 plot_timeline()
 
 # Monthly Contribution Results Section
+# Create the box to include all the content
+st.markdown(f"""
+<div style='border: 2px solid #4CAF50; padding: 10px; border-radius: 10px;'>
+""", unsafe_allow_html=True)
+
+# Monthly contribution results
 # Check if goals exist in session state
 if 'goals' in st.session_state and st.session_state.goals:
     total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
@@ -474,11 +480,7 @@ if 'goals' in st.session_state and st.session_state.goals:
 
     # Display the "Monthly Breakdown" title
     st.markdown(f"""
-    <h4 style='color:black;'>Monthly Breakdown:</h4>
-    """, unsafe_allow_html=True)
-
-    # Display the total contribution and breakdown
-    st.markdown(f"""
+        <h4 style='color:black;'>Monthly Breakdown:</h4>
         <h3 style='color: #1E90FF;'>Total Monthly Contribution to All Goals: <b>${int(round(total_contribution))}</b></h3>
         <h4>Breakdown:</h4>
         <ul>
@@ -495,5 +497,14 @@ if 'goals' in st.session_state and st.session_state.goals:
     """, unsafe_allow_html=True)
 
 else:
-    st.write("No goals have been added yet.")
+    # Display the message when no goals are added
+    st.markdown(f"""
+        <h4 style='color:black;'>No goals have been added yet.</h4>
+    """, unsafe_allow_html=True)
+
+# Close the outer box
+st.markdown(f"""
+</div>
+""", unsafe_allow_html=True)
+
 
