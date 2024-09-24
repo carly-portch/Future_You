@@ -97,7 +97,6 @@ if 'edit_goal_index' not in st.session_state:
 
 # Inputs Section
 st.markdown("<h3 class='section-header'>Inputs</h3>", unsafe_allow_html=True)
-st.markdown("<div class='input-section'>", unsafe_allow_html=True)
 
 # Input fields for income
 monthly_income = st.number_input(
@@ -106,8 +105,6 @@ monthly_income = st.number_input(
     step=100.0,
     format="%.2f"
 )
-
-st.markdown("</div>", unsafe_allow_html=True)
 
 # Add default 'Retirement' goal if not already added and monthly income is provided
 if not st.session_state.retirement_goal_added and monthly_income > 0:
