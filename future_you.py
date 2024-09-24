@@ -32,7 +32,7 @@ body {
 
 /* Section headers */
 .section-header {
-    color: #1E90FF;  /* Dodger Blue */
+    color: #4B0082;  /* Indigo */
     margin-top: 30px;
     margin-bottom: 10px;
 }
