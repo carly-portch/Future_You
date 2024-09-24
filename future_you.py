@@ -191,7 +191,7 @@ current_savings = st.number_input(
 # Rate of return or interest rate input with info icon
 st.markdown("""
 <div class='tooltip'>Rate of return or interest rate (%)
-    <span class='info-icon'>ℹ️</span> 
+    <span class='info-icon'> (ℹ️) </span> 
     <span class='tooltiptext'>This is the expected annual return rate on your investment. It represents the percentage of interest or growth you anticipate on your savings or investments over a year.</span>
 </div>
 """, unsafe_allow_html=True)
