@@ -473,9 +473,10 @@ if 'goals' in st.session_state and st.session_state.goals:
     remaining_for_current_you = monthly_income - total_contribution
 
     # Create a styled div for the section
+    <h4 style='color:black;'>Monthly Breakdown:</h4>
     st.markdown(f"""
     <div style='background-color: #ADD8E6; border: 2px solid #4CAF50; padding: 10px; border-radius: 10px;'>
-        <h4 style='color:black;'>Monthly Breakdown:</h4>
+        
         <h3 style='color: #1E90FF;'>Total Monthly Contribution to All Goals: <b>${int(round(total_contribution))}</b></h3>
         <h4>Breakdown:
         <ul>
