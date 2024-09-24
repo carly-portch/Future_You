@@ -406,10 +406,14 @@ for index, goal in enumerate(st.session_state.goals):
                 break  # Exit after removal to prevent index issues
 
 # Outputs Section
+
+# Add a thick horizontal line before the results section
+st.markdown("<hr style='height: 4px; background-color: black;'>", unsafe_allow_html=True)
+    
 st.markdown("<h3 class='section-header'>Outputs</h3>", unsafe_allow_html=True)
 
 # Timeline section
-st.markdown("<h4>My Timeline</h4>", unsafe_allow_html=True)
+st.markdown("<h2>My Timeline</h2>", unsafe_allow_html=True)
 
 def plot_timeline():
     # Get latest goal year for timeline end
@@ -467,9 +471,6 @@ plot_timeline()
 if 'goals' in st.session_state and st.session_state.goals:
     total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
     remaining_for_current_you = monthly_income - total_contribution
-
-    # Add a thick horizontal line before the results section
-    st.markdown("<hr style='height: 4px; background-color: black;'>", unsafe_allow_html=True)
 
     # Display the Monthly Breakdown header
     st.markdown("<h2>Monthly Breakdown</h2>", unsafe_allow_html=True)
