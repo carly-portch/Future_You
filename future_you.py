@@ -97,17 +97,14 @@ if 'edit_goal_index' not in st.session_state:
 
 # Inputs Section
 st.markdown("<h3 class='section-header'>Inputs</h3>", unsafe_allow_html=True)
-st.markdown("<div class='input-section'>", unsafe_allow_html=True)
 
 # Input fields for income
 monthly_income = st.number_input(
-    "Enter your total monthly income after tax",
+    "Enter your total monthly income after tax:",
     min_value=0.0,
     step=100.0,
     format="%.2f"
 )
-
-st.markdown("</div>", unsafe_allow_html=True)
 
 # Add default 'Retirement' goal if not already added and monthly income is provided
 if not st.session_state.retirement_goal_added and monthly_income > 0:
@@ -140,7 +137,6 @@ if not st.session_state.retirement_goal_added and monthly_income > 0:
 
 # Goal Addition
 st.markdown("<h3 class='section-header'>Add a New Goal</h3>", unsafe_allow_html=True)
-st.markdown("<div class='add-goal-section'>", unsafe_allow_html=True)
 goal_name = st.text_input("Name of goal")
 goal_amount = st.number_input(
     "Goal amount",
@@ -239,7 +235,6 @@ if st.button("Add goal to timeline"):
         st.success(f"Goal '{goal_name}' added successfully.")
     else:
         st.error("Please enter a valid goal name, amount, and Initial contribution.")
-st.markdown("</div>", unsafe_allow_html=True)
 
 # Sidebar for managing goals
 st.sidebar.header("Manage Goals")
@@ -445,7 +440,7 @@ def plot_timeline():
         x=timeline_df['Year'],
         y=[0] * len(timeline_df),
         mode='markers+text',
-        marker=dict(size=12, color='#800080', line=dict(width=2, color='black')),  # Purple
+        marker=dict(size=12, color='black', line=dict(width=2, color='black')), 
         text=timeline_df['Event'],
         textposition='top center',
         hoverinfo='text',
@@ -472,9 +467,6 @@ plot_timeline()
 if 'goals' in st.session_state and st.session_state.goals:
     total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
     remaining_for_current_you = monthly_income - total_contribution
-
-    # Add a thick horizontal line before the results section
-    st.markdown("<hr style='height: 4px; background-color: black;'>", unsafe_allow_html=True)
 
     # Display the Monthly Breakdown header
     st.markdown("<h2>Monthly Breakdown</h2>", unsafe_allow_html=True)
