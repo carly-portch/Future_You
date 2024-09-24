@@ -53,7 +53,7 @@ body {
 }
 /* Button styling */
 .stButton>button {
-    color: #e6e6fa;
+    color: black;
     background-color: #e6e6fa;
     border-radius: 5px;
     padding: 0.6em 1.2em;
