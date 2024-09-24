@@ -476,14 +476,14 @@ st.markdown(f"""
 <div class='results-section'>
     <h3 style='color: #1E90FF;'>Total Monthly Contribution to All Goals: <b>${int(round(total_contribution))}</b></h3>
     <h4>Breakdown:</h4>
-    <ul>
+    
 """, unsafe_allow_html=True)
 
 for goal in st.session_state.goals:
     st.markdown(f"<li><b>{goal['goal_name']}:</b> ${int(round(goal['monthly_contribution']))}/month</li>", unsafe_allow_html=True)
 
 st.markdown(f"""
-    </ul>
     <h3 style='color: #1E90FF;'>Remaining money to put towards current you: <b>${int(round(remaining_for_current_you))}</b></h3>
+<ul>
 </div>
 """, unsafe_allow_html=True)
