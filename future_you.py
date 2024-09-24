@@ -472,7 +472,6 @@ st.markdown(f"""
 <div style='border: 2px solid #4CAF50; padding: 10px; border-radius: 10px;'>
 """, unsafe_allow_html=True)
 
-# Monthly contribution results
 # Check if goals exist in session state
 if 'goals' in st.session_state and st.session_state.goals:
     total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
