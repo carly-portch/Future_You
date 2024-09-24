@@ -51,7 +51,14 @@ body {
     border-radius: 10px;
     margin-bottom: 30px;
 }
-
+/* Button styling */
+.stButton>button {
+    color: #e6e6fa;
+    background-color: #e6e6fa;
+    border-radius: 5px;
+    padding: 0.6em 1.2em;
+    font-weight: bold;
+}
 /* Add goal section */
 .add-goal-section {
     padding: 20px;
