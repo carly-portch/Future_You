@@ -467,8 +467,22 @@ def plot_timeline():
 plot_timeline()
 
 # Monthly Contribution Results Section
-# Create a container to include all the content
+# Add custom CSS for styling the container
+st.markdown("""
+    <style>
+    .custom-container {
+        background-color: #e0f7fa;  /* Light blue shade */
+        padding: 20px;               /* Padding around the content */
+        border-radius: 10px;         /* Rounded corners */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Create a container with the custom CSS class
 with st.container():
+    st.markdown('<div class="custom-container">', unsafe_allow_html=True)
+
     # Check if goals exist in session state
     if 'goals' in st.session_state and st.session_state.goals:
         total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
@@ -478,7 +492,7 @@ with st.container():
         st.markdown("<h4 style='color:black;'>Monthly Breakdown:</h4>", unsafe_allow_html=True)
         st.markdown(f"<h3 style='color: #1E90FF;'>Total Monthly Contribution to All Goals: <b>${int(round(total_contribution))}</b></h3>", unsafe_allow_html=True)
         st.markdown("<h4>Breakdown:</h4>", unsafe_allow_html=True)
-        
+
         # Start an unordered list
         st.markdown("<ul>", unsafe_allow_html=True)
 
@@ -493,5 +507,7 @@ with st.container():
     else:
         # Display the message when no goals are added
         st.markdown("<h4 style='color:black;'>No goals have been added yet.</h4>", unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)  # Close the custom container div
 
 
