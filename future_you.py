@@ -472,30 +472,28 @@ if 'goals' in st.session_state and st.session_state.goals:
     total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
     remaining_for_current_you = monthly_income - total_contribution
 
-    # Display the "Monthly Breakdown" title outside of the box
+    # Display the "Monthly Breakdown" title
     st.markdown(f"""
     <h4 style='color:black;'>Monthly Breakdown:</h4>
     """, unsafe_allow_html=True)
 
-    # Create the box to include the total contribution, list of goals, and remaining money
+    # Display the total contribution and breakdown
     st.markdown(f"""
-    <div style='border: 2px solid #4CAF50; padding: 10px; border-radius: 10px;'>
         <h3 style='color: #1E90FF;'>Total Monthly Contribution to All Goals: <b>${int(round(total_contribution))}</b></h3>
         <h4>Breakdown:</h4>
         <ul>
     """, unsafe_allow_html=True)
 
-    # Loop through the goals and include them within the box
+    # Loop through the goals and include them in the breakdown
     for goal in st.session_state.goals:
         st.markdown(f"<li><b>{goal['goal_name']}:</b> ${int(round(goal['monthly_contribution']))}/month</li>", unsafe_allow_html=True)
 
-    # Close the unordered list and continue the box to include the remaining money section
+    # Close the unordered list and include the remaining money section
     st.markdown(f"""
         </ul>
         <h3 style='color: #1E90FF;'>Remaining money to put towards current you: <b>${int(round(remaining_for_current_you))}</b></h3>
-    
     """, unsafe_allow_html=True)
-    </div>
-# The else block must be aligned with the 'if' statement
+
 else:
     st.write("No goals have been added yet.")
+
