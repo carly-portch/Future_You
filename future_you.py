@@ -416,7 +416,7 @@ for index, goal in enumerate(st.session_state.goals):
 st.markdown("<h3 class='section-header'>Outputs</h3>", unsafe_allow_html=True)
 
 # Timeline section
-st.markdown("<h4>My Timeline</h4>", unsafe_allow_html=True)
+st.markdown("<h3 class='section2-header'>My Timeline</h3>", unsafe_allow_html=True)
 
 def plot_timeline():
     # Get latest goal year for timeline end
@@ -442,7 +442,7 @@ def plot_timeline():
 
     fig = go.Figure()
 
-    # Add purple dots for current year and goals
+    # Add dots for current year and goals
     fig.add_trace(go.Scatter(
         x=timeline_df['Year'],
         y=[0] * len(timeline_df),
