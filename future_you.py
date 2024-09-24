@@ -467,9 +467,6 @@ def plot_timeline():
 plot_timeline()
 
 # Monthly contributions section
-total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
-remaining_for_current_you = monthly_income - total_contribution
-
 # Check if goals exist in session state
 if 'goals' in st.session_state and st.session_state.goals:
     total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
@@ -477,7 +474,7 @@ if 'goals' in st.session_state and st.session_state.goals:
 
     # Display contribution summary, excluding the breakdown title from the box
     st.markdown(f"""
-    <h4 style='color: #1E90FF;'>Monthly Breakdown:</h4>
+    <h4 style='color: 'black';'>Monthly Breakdown:</h4>
     """, unsafe_allow_html=True)
 
     # Start the box with border for the other sections
