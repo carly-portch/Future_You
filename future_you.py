@@ -480,13 +480,12 @@ if 'goals' in st.session_state and st.session_state.goals:
 
     # Display the total contribution to goals
     st.markdown(f"""
-        <h3>Monthly Contributions Towards Goals:</h3>
-        <h4>Total Monthly Contribution to All Goals: <b>${int(round(total_contribution))}</b></h4>
-        <h4>Breakdown:</h4>
+        <h3 style='color: #1E90FF;'>Monthly Contributions Towards Goals:</h3>
+        <h4 style='color: #1E90FF;'>Total Monthly Contribution to All Goals: <b>${int(round(total_contribution))}</b></h4>
         <ul>
     """, unsafe_allow_html=True)
 
-    # Loop through the goals and include them in the breakdown
+    # Loop through the goals and include them directly under the total contributions number
     for goal in st.session_state.goals:
         st.markdown(f"<li><b>{goal['goal_name']}:</b> ${int(round(goal['monthly_contribution']))}/month</li>", unsafe_allow_html=True)
 
