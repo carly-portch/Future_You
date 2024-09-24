@@ -475,8 +475,7 @@ if 'goals' in st.session_state and st.session_state.goals:
     # Create a styled div for the section
     st.markdown(f"""
     <div style='background-color: #ADD8E6; border: 2px solid #4CAF50; padding: 10px; border-radius: 10px;'>
-        <h4 style='color:black;'>Monthly Breakdown:</h4>
-        <h3 style='color: #1E90FF;'>Total Monthly Contribution to All Goals: <b>${int(round(total_contribution))}</b></h3>
+        <h3 style='color: #1E90FF;'>Remaining money to put towards current you: <b>${int(round(remaining_for_current_you))}</b></h3>
         <h4>Breakdown:</h4>
         <ul>
     """, unsafe_allow_html=True)
@@ -485,10 +484,10 @@ if 'goals' in st.session_state and st.session_state.goals:
     for goal in st.session_state.goals:
         st.markdown(f"<li><b>{goal['goal_name']}:</b> ${int(round(goal['monthly_contribution']))}/month</li>", unsafe_allow_html=True)
 
-    # Close the unordered list and include the remaining money section
+    # Close the unordered list and include the total contribution section
     st.markdown(f"""
         </ul>
-        <h3 style='color: #1E90FF;'>Remaining money to put towards current you: <b>${int(round(remaining_for_current_you))}</b></h3>
+        <h3 style='color: #1E90FF;'>Total Monthly Contribution to All Goals: <b>${int(round(total_contribution))}</b></h3>
     </div>
     """, unsafe_allow_html=True)
 
@@ -499,3 +498,4 @@ else:
         <h4 style='color:black;'>No goals have been added yet.</h4>
     </div>
     """, unsafe_allow_html=True)
+
