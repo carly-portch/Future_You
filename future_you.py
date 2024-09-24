@@ -103,7 +103,7 @@ if 'edit_goal_index' not in st.session_state:
     st.session_state.edit_goal_index = None
 
 # Inputs Section
-st.markdown("<h3 class='section-header'>Inputs</h3>", unsafe_allow_html=True)
+st.markdown("<h2 class='section-header'>Inputs</h2>", unsafe_allow_html=True)
 
 # Input fields for income
 monthly_income = st.number_input(
@@ -143,7 +143,7 @@ if not st.session_state.retirement_goal_added and monthly_income > 0:
         st.session_state.retirement_goal_added = True
 
 # Goal Addition
-st.markdown("<h3 class='section-header'>Add a New Goal</h3>", unsafe_allow_html=True)
+st.markdown("<h3 class='section2-header'>Add a New Goal</h3>", unsafe_allow_html=True)
 goal_name = st.text_input("Name of goal")
 goal_amount = st.number_input(
     "Goal amount",
