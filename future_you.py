@@ -408,7 +408,7 @@ for index, goal in enumerate(st.session_state.goals):
 # Outputs Section
 
 # Add a thick horizontal line before the results section
-st.markdown("<hr style='height: 4px; background-color: black;'>", unsafe_allow_html=True)
+st.markdown("<hr style='height: 4px; background-color: #1E90FF;'>", unsafe_allow_html=True)
     
 st.markdown("<h3 class='section-header'>Outputs</h3>", unsafe_allow_html=True)
 
