@@ -493,8 +493,9 @@ if 'goals' in st.session_state and st.session_state.goals:
 
     # Display the remaining money section
     st.markdown(f"""
-        <h3 style='color: #1E90FF;'>Remaining money to put towards current you: <style='color: red;'><b>${int(round(remaining_for_current_you))}</h3>
+        <h3 style='color: #1E90FF;'>Remaining money to put towards current you: <span style='color: red;'><b>${int(round(remaining_for_current_you))}</b></span></h3>
     """, unsafe_allow_html=True)
+
 
 else:
     # Add a thick horizontal line for no goals message
