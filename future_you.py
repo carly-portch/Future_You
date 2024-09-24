@@ -25,7 +25,7 @@ body {
 
 .description {
     background-color: #e6e6fa;  /* Lavender */
-    padding: 10px;
+    padding: 20px;
     border-radius: 10px;
     margin-bottom: 30px;
 }
