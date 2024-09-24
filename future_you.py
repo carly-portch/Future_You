@@ -493,9 +493,9 @@ if 'goals' in st.session_state and st.session_state.goals:
     st.markdown(f"""
         </ul>
         <h3 style='color: #1E90FF;'>Remaining money to put towards current you: <b>${int(round(remaining_for_current_you))}</b></h3>
-    </div>
+    
     """, unsafe_allow_html=True)
-
+    </div>
 # The else block must be aligned with the 'if' statement
 else:
     st.write("No goals have been added yet.")
