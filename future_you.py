@@ -479,7 +479,7 @@ if 'goals' in st.session_state and st.session_state.goals:
     st.markdown("<h3 class='section2-header'>Monthly Breakdown</h3>", unsafe_allow_html=True)
 
     # Display the subheader for contributions towards goals
-    st.markdown(f"<h3 style='color: black;'>1) Monthly contribution towards goals: <span style='color: red;'><b>${int(round(total_contribution))}</b></span></h3>", unsafe_allow_html=True)
+    st.markdown(f"<h4 style='color: black;'>1) Monthly contribution towards goals: <span style='color: red;'><b>${int(round(total_contribution))}</b></span></h4>", unsafe_allow_html=True)
 
     # Loop through the goals and include them in the list
     st.markdown("<ul>", unsafe_allow_html=True)
@@ -489,12 +489,12 @@ if 'goals' in st.session_state and st.session_state.goals:
 
     # Display the remaining money section
     st.markdown(f"""
-        <h3 style='color: black;'>2) Remaining money to put towards current you: <span style='color: red;'><b>${int(round(remaining_for_current_you))}</b></span></h3>
+        <h4 style='color: black;'>2) Remaining money to put towards current you: <span style='color: red;'><b>${int(round(remaining_for_current_you))}</b></span></h4>
     """, unsafe_allow_html=True)
 
 
 else:
     # Add a thick horizontal line for no goals message
     st.markdown("<hr style='height: 4px; background-color: black;'>", unsafe_allow_html=True)
-    st.markdown("<h3>No goals have been added yet.</h3>", unsafe_allow_html=True)
+    st.markdown("<h4>No goals have been added yet.</h4>", unsafe_allow_html=True)
 
