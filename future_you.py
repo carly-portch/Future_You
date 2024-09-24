@@ -480,7 +480,7 @@ if 'goals' in st.session_state and st.session_state.goals:
     st.markdown("<h2>Monthly Breakdown</h2>", unsafe_allow_html=True)
 
     # Display the subheader for contributions towards goals
-    st.markdown(f"<h3 style='color: #1E90FF;'>Monthly contributions towards goals: <span style='color: red;'><b>${int(round(total_contribution))}</b></span></h3>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='color: #1E90FF;'>1) Monthly contributions towards goals: <span style='color: red;'><b>${int(round(total_contribution))}</b></span></h3>", unsafe_allow_html=True)
 
     # Loop through the goals and include them in the list
     st.markdown("<ul>", unsafe_allow_html=True)
@@ -490,7 +490,7 @@ if 'goals' in st.session_state and st.session_state.goals:
 
     # Display the remaining money section
     st.markdown(f"""
-        <h3 style='color: #1E90FF;'>Remaining money to put towards current you: <span style='color: red;'><b>${int(round(remaining_for_current_you))}</b></span></h3>
+        <h3 style='color: #1E90FF;'>2) Remaining money to put towards current you: <span style='color: red;'><b>${int(round(remaining_for_current_you))}</b></span></h3>
     """, unsafe_allow_html=True)
 
 
