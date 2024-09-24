@@ -79,7 +79,7 @@ body {
 st.markdown("<h1 class='title'>The Future You Tool</h1>", unsafe_allow_html=True)
 st.markdown("""
 <div class='description'>
-    <h4>This tool is here to help you visualize your medium and long-term goals. The aim is to help you get clear on what these goals are, their timeline, and how you can make them a reality. This can be used for your family unit, joint goals with a partner, or your own individual financial situation - whatever makes sense for your situation!
+    <h4>This tool is here to help you visualise your medium and long-term goals. The aim is to help you get clear on what these goals are, their timeline, and how you can make them a reality. This can be used for your family unit, joint goals with a partner, or your own individual financial situation - whatever makes sense for you!
     Add multiple goals like a down payment, education, or a vacation. Play around with different timelines, goal amounts, etc. Have fun and design your dream life! </h4>
 </div>
 """, unsafe_allow_html=True)
@@ -414,7 +414,7 @@ for index, goal in enumerate(st.session_state.goals):
 st.markdown("<h3 class='section-header'>Outputs</h3>", unsafe_allow_html=True)
 
 # Timeline section
-st.markdown("<h4>Timeline</h4>", unsafe_allow_html=True)
+st.markdown("<h4>My Timeline</h4>", unsafe_allow_html=True)
 
 def plot_timeline():
     # Get latest goal year for timeline end
@@ -428,9 +428,9 @@ def plot_timeline():
         'Year': [current_year] + [goal['target_year'] for goal in st.session_state.goals],
         'Event': ['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals],
         'Text': [
-            f"<b>Current Year:</b> {current_year}<br><b>Combined Monthly Income:</b> ${int(round(monthly_income))}"
+            f"<b>Current Year:</b> {current_year}<br><b>Monthly Income:</b> ${int(round(monthly_income))}"
         ] + [
-            f"<b>Goal:</b> {goal['goal_name']}<br><b>Amount:</b> ${int(round(goal['goal_amount']))}<br><b>Initial Contribution:</b> ${int(round(goal['current_savings']))}<br><b>Monthly Contribution:</b> ${int(round(goal['monthly_contribution']))}"
+            f"<b>Year:</b> {goal['target_year']}<br><b>Goal Name:</b> {goal['goal_name']}<br><b>Goal Amount:</b> ${int(round(goal['goal_amount']))}<br><b>Initial Contribution:</b> ${int(round(goal['current_savings']))}<br><b>Monthly Contribution:</b> ${int(round(goal['monthly_contribution']))}"
             for goal in st.session_state.goals
         ]
     }
@@ -455,7 +455,7 @@ def plot_timeline():
         x=timeline_df['Year'],
         y=[0] * len(timeline_df),
         mode='lines',
-        line=dict(color='#1E90FF', width=2)  # Dodger Blue
+        line=dict(color='black', width=2)
     ))
 
     fig.update_layout(xaxis_title='Year', yaxis=dict(visible=False), showlegend=False)
