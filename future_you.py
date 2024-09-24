@@ -111,6 +111,31 @@ body {
 </style>
 """, unsafe_allow_html=True)
 
+/* Add this to your CSS */
+.info-icon {
+    display: inline-block;
+    font-size: 14px;
+    color: #555;
+    margin-left: 5px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.tooltip {
+    display: inline-block;
+    position: relative;
+}
+
+.tooltip:hover .info-icon {
+    color: #1E90FF;  /* Highlight color on hover */
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+
 # Title and Description
 st.markdown("<h1 class='title'>The Future You Tool</h1>", unsafe_allow_html=True)
 st.markdown("""
@@ -191,7 +216,7 @@ current_savings = st.number_input(
 # Rate of return or interest rate input with info icon
 st.markdown("""
 <div class='tooltip'>Rate of return or interest rate (%)
-    <span class='info-icon'> (ℹ️) </span> 
+    <span class='info-icon'>ℹ️</span> 
     <span class='tooltiptext'>This is the expected annual return rate on your investment. It represents the percentage of interest or growth you anticipate on your savings or investments over a year.</span>
 </div>
 """, unsafe_allow_html=True)
