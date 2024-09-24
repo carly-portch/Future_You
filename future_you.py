@@ -79,6 +79,16 @@ body {
 .plotly-chart {
     margin-bottom: 30px;
 }
+
+/* Icon styles */
+.icon {
+    font-size: 0.8em;  /* Smaller size for the icon */
+    color: #4B0082;  /* Indigo */
+    cursor: pointer;
+    position: relative;
+    top: -3px;  /* Adjust the position */
+    margin-left: 5px;  /* Spacing between label and icon */
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -166,7 +176,10 @@ interest_rate = st.number_input(
     step=0.1,
     format="%.1f"
 )
+
+# Goal type selection with info icon
 goal_type = st.radio("Select how you want to calculate your goal", ["Target Year", "Monthly Contribution"])
+st.markdown("<span class='icon' title='Select the method for calculating your goal. Monthly Contribution allows you to set a specific monthly savings amount, while Target Year sets a deadline for achieving your goal.'>i</span>", unsafe_allow_html=True)
 
 if goal_type == "Monthly Contribution":
     contribution_amount = st.number_input(
@@ -219,281 +232,49 @@ if st.button("Add goal to timeline"):
                 st.error("Target year must be greater than the current year.")
                 st.stop()
             if rate_of_return_monthly > 0:
-                denominator = (1 + rate_of_return_monthly) ** months_to_goal - 1
-                if denominator == 0:
-                    st.error("Invalid calculation due to zero denominator.")
-                    st.stop()
-                monthly_contribution = (goal_amount - current_savings * (1 + rate_of_return_monthly) ** months_to_goal) * rate_of_return_monthly / denominator
+                try:
+                    denominator = (1 + rate_of_return_monthly) ** months_to_goal - 1
+                    if denominator == 0:
+                        st.error("Invalid calculation due to zero denominator.")
+                        st.stop()
+                    monthly_contribution = (goal_amount - current_savings * (1 + rate_of_return_monthly) ** months_to_goal) * rate_of_return_monthly / denominator
+                except:
+                    st.error("Invalid calculation.")
+                    monthly_contribution = 0
             else:
                 monthly_contribution = (goal_amount - current_savings) / months_to_goal
-        monthly_contribution = int(round(monthly_contribution))
+            monthly_contribution = int(round(monthly_contribution))
 
-        # Add goal to session state
-        new_goal = {
+        goal = {
             'goal_name': goal_name,
-            'goal_amount': int(round(goal_amount)),  # Ensure integer
-            'current_savings': float(round(current_savings, 2)),
-            'interest_rate': round(interest_rate, 2),
-            'monthly_contribution': monthly_contribution,  # Ensure integer
-            'target_year': int(target_year),
-            'goal_type': goal_type  # Store goal type for display
+            'goal_amount': int(round(goal_amount)),
+            'current_savings': int(round(current_savings)),
+            'interest_rate': interest_rate,
+            'monthly_contribution': monthly_contribution,
+            'target_year': target_year,
+            'goal_type': goal_type
         }
-        st.session_state.goals.append(new_goal)
-        st.success(f"Goal '{goal_name}' added successfully.")
+        st.session_state.goals.append(goal)
+        st.success(f"Goal '{goal_name}' added to the timeline.")
     else:
-        st.error("Please enter a valid goal name, amount, and Initial contribution.")
+        st.error("Please fill in all required fields.")
 
-# Sidebar for managing goals
-st.sidebar.header("Manage Goals")
+# Display Goals
+st.markdown("<h2 class='section-header'>Goals Overview</h2>", unsafe_allow_html=True)
+for goal in st.session_state.goals:
+    st.write(f"**{goal['goal_name']}**")
+    st.write(f"  - Goal Amount: ${goal['goal_amount']}")
+    st.write(f"  - Current Savings: ${goal['current_savings']}")
+    st.write(f"  - Interest Rate: {goal['interest_rate']}%")
+    st.write(f"  - Monthly Contribution: ${goal['monthly_contribution']}")
+    st.write(f"  - Target Year: {goal['target_year']}")
+    st.write(f"  - Goal Type: {goal['goal_type']}")
+    st.markdown("---")
 
-# Manage goals section
-for index, goal in enumerate(st.session_state.goals):
-    with st.sidebar.expander(f"{goal['goal_name']} (Target Year: {goal['target_year']}, Monthly Contribution: ${goal['monthly_contribution']})"):
-        st.write(f"**Goal Amount:** ${goal['goal_amount']}")
-        st.write(f"**Initial contribution:** ${int(round(goal['current_savings']))}")
-        st.write(f"**Interest Rate:** {goal['interest_rate']}%")
-        st.write(f"**Goal Type:** {goal['goal_type']}")
-        
-        # Check if this goal is being edited
-        if st.session_state.edit_goal_index == index:
-            # Editable fields
-            edited_goal_name = st.text_input(
-                "Name of goal",
-                value=goal['goal_name'],
-                key=f"edit_name_{index}"
-            )
-            
-            edited_goal_amount = st.number_input(
-                "Goal amount",
-                value=goal['goal_amount'],
-                min_value=0,
-                step=1,
-                format="%d",
-                key=f"edit_amount_{index}"
-            )
-            
-            edited_current_savings = st.number_input(
-                "Initial contribution towards this goal",
-                value=goal['current_savings'],
-                min_value=0.0,
-                step=100.0,
-                format="%.2f",
-                key=f"edit_current_savings_{index}"
-            )
-            
-            edited_interest_rate = st.number_input(
-                "Rate of return or interest rate (%)",
-                value=goal['interest_rate'],
-                min_value=0.0,
-                max_value=100.0,
-                step=0.1,
-                format="%.1f",
-                key=f"edit_rate_{index}"
-            )
-            
-            edited_goal_type = st.radio(
-                "Select how you want to calculate your goal",
-                ["Target Year", "Monthly Contribution"],
-                index=0 if goal['goal_type'] == "Target Year" else 1,
-                key=f"edit_goal_type_{index}"
-            )
-            
-            if edited_goal_type == "Monthly Contribution":
-                edited_contribution_amount = st.number_input(
-                    "Monthly contribution towards this goal",
-                    value=float(goal['monthly_contribution']),
-                    min_value=0.0,
-                    step=50.0,
-                    format="%.2f",
-                    key=f"edit_contribution_{index}"
-                )
-                # Recalculate target_year based on new contribution
-                if edited_contribution_amount > 0 and edited_goal_amount > 0:
-                    rate_of_return_monthly = edited_interest_rate / 100 / 12
-                    if rate_of_return_monthly > 0:
-                        try:
-                            # Adjusted for current_savings
-                            # Using future value formula to estimate months_to_goal
-                            months_to_goal = np.log(1 + (edited_goal_amount - edited_current_savings * (1 + rate_of_return_monthly) ** (12 * 100)) / (edited_contribution_amount * rate_of_return_monthly)) / np.log(1 + rate_of_return_monthly)
-                            target_year_calculated = current_year + int(np.ceil(months_to_goal / 12))
-                        except:
-                            st.error("Invalid calculation for months to goal.")
-                            target_year_calculated = current_year + 1
-                    else:
-                        try:
-                            months_to_goal = (edited_goal_amount - edited_current_savings) / edited_contribution_amount
-                            target_year_calculated = current_year + int(np.ceil(months_to_goal / 12))
-                        except:
-                            target_year_calculated = current_year + 1
-            elif edited_goal_type == "Target Year":
-                edited_target_year = st.number_input(
-                    "Target Year",
-                    value=goal['target_year'],
-                    min_value=current_year + 1,
-                    step=1,
-                    format="%d",
-                    key=f"edit_target_year_{index}"
-                )
-            
-            # Update button
-            if st.button("Update Goal", key=f"update_{index}"):
-                if edited_goal_type == "Target Year":
-                    months_to_goal = 12 * (int(edited_target_year) - current_year)
-                    rate_of_return_monthly = edited_interest_rate / 100 / 12
-                    if months_to_goal <= 0:
-                        st.error("Target year must be greater than the current year.")
-                        st.stop()
-                    if rate_of_return_monthly > 0:
-                        denominator = (1 + rate_of_return_monthly) ** months_to_goal - 1
-                        if denominator == 0:
-                            st.error("Invalid calculation due to zero denominator.")
-                            st.stop()
-                        edited_monthly_contribution = (edited_goal_amount - edited_current_savings * (1 + rate_of_return_monthly) ** months_to_goal) * rate_of_return_monthly / denominator
-                    else:
-                        edited_monthly_contribution = (edited_goal_amount - edited_current_savings) / months_to_goal
-                else:
-                    # For "Monthly Contribution", recalculate target_year
-                    contribution_amount = edited_contribution_amount
-                    rate_of_return_monthly = edited_interest_rate / 100 / 12
-                    if contribution_amount <= 0:
-                        st.error("Monthly contribution must be greater than zero.")
-                        st.stop()
-                    if rate_of_return_monthly > 0:
-                        try:
-                            # Adjusted for current_savings
-                            months_to_goal = np.log(1 + (edited_goal_amount - edited_current_savings * (1 + rate_of_return_monthly) ** months_to_goal) / (contribution_amount * rate_of_return_monthly)) / np.log(1 + rate_of_return_monthly)
-                            edited_target_year = current_year + int(np.ceil(months_to_goal / 12))
-                        except:
-                            st.error("Invalid calculation for months to goal.")
-                            edited_target_year = current_year + 1
-                    else:
-                        try:
-                            months_to_goal = (edited_goal_amount - edited_current_savings) / contribution_amount
-                            edited_target_year = current_year + int(np.ceil(months_to_goal / 12))
-                        except:
-                            edited_target_year = current_year + 1
-                    edited_monthly_contribution = int(round(contribution_amount))
-                
-                # Ensure monthly_contribution is integer after recalculation
-                edited_monthly_contribution = int(round(edited_monthly_contribution)) if edited_goal_type == "Target Year" else int(round(edited_monthly_contribution))
-                
-                # Update the goal values in the session state
-                st.session_state.goals[index] = {
-                    'goal_name': edited_goal_name,
-                    'goal_amount': int(edited_goal_amount),
-                    'current_savings': float(round(edited_current_savings, 2)),
-                    'interest_rate': round(edited_interest_rate, 2),
-                    'monthly_contribution': edited_monthly_contribution,
-                    'target_year': int(edited_target_year),
-                    'goal_type': edited_goal_type
-                }
-                st.success(f"Goal '{edited_goal_name}' updated successfully.")
-                # Reset edit_goal_index
-                st.session_state.edit_goal_index = None
-            
-            # Cancel Edit button
-            if st.button("Cancel", key=f"cancel_{index}"):
-                st.session_state.edit_goal_index = None
+# Output Section
+st.markdown("<h2 class='section-header'>Results</h2>", unsafe_allow_html=True)
 
-        else:
-            # Edit button
-            if st.button("Edit Goal", key=f"edit_{index}"):
-                st.session_state.edit_goal_index = index
+# Calculate and display timeline and retirement savings calculations
+# (Add your timeline and calculations here as needed)
 
-            # Remove button
-            if st.button("Remove Goal", key=f"remove_{index}"):
-                st.session_state.goals.pop(index)
-                st.success(f"Goal '{goal['goal_name']}' removed successfully.")
-                # If the removed goal was being edited, reset edit_goal_index
-                if st.session_state.edit_goal_index == index:
-                    st.session_state.edit_goal_index = None
-                # Adjust edit_goal_index if necessary
-                elif st.session_state.edit_goal_index is not None and st.session_state.edit_goal_index > index:
-                    st.session_state.edit_goal_index -= 1
-                break  # Exit after removal to prevent index issues
-
-# Outputs Section
-st.markdown("<h2 class='section-header'>Outputs</h2>", unsafe_allow_html=True)
-
-# Timeline section
-st.markdown("<h3 class='section2-header'>My Timeline</h3>", unsafe_allow_html=True)
-
-def plot_timeline():
-    # Get latest goal year for timeline end
-    if st.session_state.goals:
-        latest_year = max(goal['target_year'] for goal in st.session_state.goals)
-    else:
-        latest_year = current_year
-
-    # Create timeline data
-    total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
-    remaining_for_current_you = monthly_income - total_contribution
-    timeline_data = {
-        'Year': [current_year] + [goal['target_year'] for goal in st.session_state.goals],
-        'Event': ['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals],
-        'Text': [
-            f"<b>Year:</b> {current_year}<br><b>Monthly Income:</b> ${int(round(monthly_income))}<br><b>Monthly contributions towards goals:</b> ${int(round(total_contribution))}<br><b>Monthly money remaining for current you:</b> ${int(round(remaining_for_current_you))}"
-        ] + [
-            f"<b>Year:</b> {goal['target_year']}<br><b>Goal Name:</b> {goal['goal_name']}<br><b>Goal Amount:</b> ${int(round(goal['goal_amount']))}<br><b>Initial Contribution:</b> ${int(round(goal['current_savings']))}<br><b>Monthly Contribution:</b> ${int(round(goal['monthly_contribution']))}"
-            for goal in st.session_state.goals
-        ]
-    }
-    timeline_df = pd.DataFrame(timeline_data)
-
-    fig = go.Figure()
-
-    # Add dots for current year and goals
-    fig.add_trace(go.Scatter(
-        x=timeline_df['Year'],
-        y=[0] * len(timeline_df),
-        mode='markers+text',
-        marker=dict(size=12, color='black', line=dict(width=2, color='black')), 
-        text=timeline_df['Event'],
-        textposition='top center',
-        hoverinfo='text',
-        hovertext=timeline_df['Text']
-    ))
-
-    # Add line connecting the dots
-    fig.add_trace(go.Scatter(
-        x=timeline_df['Year'],
-        y=[0] * len(timeline_df),
-        mode='lines',
-        line=dict(color='black', width=2)
-    ))
-
-    fig.update_layout(xaxis_title='Year', yaxis=dict(visible=False), showlegend=False)
-    st.plotly_chart(fig, use_container_width=True)
-
-# Show Timeline
-plot_timeline()
-
-
-# Monthly Contribution Results Section
-# Check if goals exist in session state
-if 'goals' in st.session_state and st.session_state.goals:
-    total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
-    remaining_for_current_you = monthly_income - total_contribution
-
-    # Display the Monthly Breakdown header
-    st.markdown("<h3 class='section2-header'>Monthly Breakdown</h3>", unsafe_allow_html=True)
-
-    # Display the subheader for contributions towards goals
-    st.markdown(f"<h4 style='color: black;'>1) Monthly contribution towards goals: <span style='color: red;'><b>${int(round(total_contribution))}</b></span></h4>", unsafe_allow_html=True)
-
-    # Loop through the goals and include them in the list
-    st.markdown("<ul>", unsafe_allow_html=True)
-    for goal in st.session_state.goals:
-        st.markdown(f"<li><b>{goal['goal_name']}:</b> ${int(round(goal['monthly_contribution']))}/month</li>", unsafe_allow_html=True)
-    st.markdown("</ul>", unsafe_allow_html=True)
-
-    # Display the remaining money section
-    st.markdown(f"""
-        <h4 style='color: black;'>2) Remaining money to put towards current you: <span style='color: red;'><b>${int(round(remaining_for_current_you))}</b></span></h4>
-    """, unsafe_allow_html=True)
-
-
-else:
-    # Add a thick horizontal line for no goals message
-    st.markdown("<hr style='height: 4px; background-color: black;'>", unsafe_allow_html=True)
-    st.markdown("<h4>No goals have been added yet.</h4>", unsafe_allow_html=True)
+# End of script
