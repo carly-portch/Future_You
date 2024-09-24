@@ -477,7 +477,7 @@ st.markdown(f"""
     <h3 style='color: #1E90FF;'>Total Monthly Contribution to All Goals: <b>${int(round(total_contribution))}</b></h3>
     <h4>Breakdown:</h4>
     
-""", unsafe_allow_html=True)
+# """, unsafe_allow_html=True)
 
 for goal in st.session_state.goals:
     st.markdown(f"<li><b>{goal['goal_name']}:</b> ${int(round(goal['monthly_contribution']))}/month</li>", unsafe_allow_html=True)
