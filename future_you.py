@@ -476,7 +476,7 @@ if 'goals' in st.session_state and st.session_state.goals:
     remaining_for_current_you = monthly_income - total_contribution
 
     # Display the Monthly Breakdown header
-    st.markdown("<h3 class='section-header'>Monthly Breakdown</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 class='section2-header'>Monthly Breakdown</h3>", unsafe_allow_html=True)
 
     # Display the subheader for contributions towards goals
     st.markdown(f"<h3 style='color: #1E90FF;'>1) Monthly contribution towards goals: <span style='color: red;'><b>${int(round(total_contribution))}</b></span></h3>", unsafe_allow_html=True)
