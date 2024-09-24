@@ -413,7 +413,7 @@ for index, goal in enumerate(st.session_state.goals):
                 break  # Exit after removal to prevent index issues
 
 # Outputs Section
-st.markdown("<h3 class='section-header'>Outputs</h3>", unsafe_allow_html=True)
+st.markdown("<h2 class='section-header'>Outputs</h2>", unsafe_allow_html=True)
 
 # Timeline section
 st.markdown("<h3 class='section2-header'>My Timeline</h3>", unsafe_allow_html=True)
