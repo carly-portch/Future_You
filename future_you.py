@@ -467,8 +467,8 @@ def plot_timeline():
 plot_timeline()
 
 # Monthly contributions section
-    total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
-    remaining_for_current_you = monthly_income - total_contribution
+total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
+remaining_for_current_you = monthly_income - total_contribution
 st.markdown("<h4>Monthly Breakdown</h4>", unsafe_allow_html=True)
 
 # Create a styled div to highlight results
