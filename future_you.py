@@ -76,11 +76,11 @@ body {
 """, unsafe_allow_html=True)
 
 # Title and Description
-st.markdown("<h1 class='title'>Plan Your Future Together</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='title'>The Future You Tool</h1>", unsafe_allow_html=True)
 st.markdown("""
 <div class='description'>
-    <h4>This tool helps you and your partner estimate your savings and manage joint goals.
-    Add multiple goals like a down payment, education, or a vacation.</h4>
+    <h4>This tool is here to help you visualize your medium and long-term goals. The aim is to help you get clear on what these goals are, their timeline, and how you can make them a reality. This can be used for your family unit, joint goals with a partner, or your own individual financial situation - whatever makes sense for your situation!
+    Add multiple goals like a down payment, education, or a vacation. Play around with different timelines, goal amounts, etc. Have fun and design your dream life! </h4>
 </div>
 """, unsafe_allow_html=True)
 
@@ -101,7 +101,7 @@ st.markdown("<div class='input-section'>", unsafe_allow_html=True)
 
 # Input fields for income
 monthly_income = st.number_input(
-    "Enter your combined monthly income after tax",
+    "Enter your total monthly income after tax",
     min_value=0.0,
     step=100.0,
     format="%.2f"
@@ -117,7 +117,7 @@ if not st.session_state.retirement_goal_added and monthly_income > 0:
         'current_savings': 0.0,  # Initialize with zero savings as float
         'interest_rate': 7.0,
         'monthly_contribution': None,  # Will be calculated below
-        'target_year': current_year + 30,
+        'target_year': current_year + 40,
         'goal_type': 'Target Year'
     }
     # Calculate monthly contribution for the retirement goal
@@ -414,7 +414,7 @@ for index, goal in enumerate(st.session_state.goals):
 st.markdown("<h3 class='section-header'>Outputs</h3>", unsafe_allow_html=True)
 
 # Timeline section
-st.markdown("<h4>Joint Life Timeline</h4>", unsafe_allow_html=True)
+st.markdown("<h4>Timeline</h4>", unsafe_allow_html=True)
 
 def plot_timeline():
     # Get latest goal year for timeline end
@@ -458,7 +458,7 @@ def plot_timeline():
         line=dict(color='#1E90FF', width=2)  # Dodger Blue
     ))
 
-    fig.update_layout(title="Joint Life Timeline", xaxis_title='Year', yaxis=dict(visible=False), showlegend=False)
+    fig.update_layout(xaxis_title='Year', yaxis=dict(visible=False), showlegend=False)
     st.plotly_chart(fig, use_container_width=True)
 
 # Show Timeline
