@@ -59,6 +59,11 @@ body {
     padding: 0.6em 1.2em;
     font-weight: bold;
 }
+/* Text styling */
+.stApp p, .stApp div, .stApp span, .stApp label {
+    color: #4f4f4f;
+    font-family: 'Verdana', sans-serif;
+ }
 /* Add goal section */
 .add-goal-section {
     padding: 20px;
