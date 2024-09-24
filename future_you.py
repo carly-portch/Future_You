@@ -155,7 +155,7 @@ if not st.session_state.retirement_goal_added and monthly_income > 0:
         st.session_state.retirement_goal_added = True
 
 # Goal Addition
-st.markdown("<h3 class='section2-header'>Add a New Goal</h3>", unsafe_allow_html=True)
+st.markdown("<h4 class='section2-header'>Add a New Goal</h4>", unsafe_allow_html=True)
 goal_name = st.text_input("Name of goal")
 goal_amount = st.number_input(
     "Goal amount",
@@ -428,7 +428,7 @@ for index, goal in enumerate(st.session_state.goals):
 st.markdown("<h2 class='section-header'>Outputs</h2>", unsafe_allow_html=True)
 
 # Timeline section
-st.markdown("<h3 class='section2-header'>My Timeline</h3>", unsafe_allow_html=True)
+st.markdown("<h4 class='section2-header'>My Timeline</h4>", unsafe_allow_html=True)
 
 def plot_timeline():
     # Get latest goal year for timeline end
@@ -488,7 +488,7 @@ if 'goals' in st.session_state and st.session_state.goals:
     remaining_for_current_you = monthly_income - total_contribution
 
     # Display the Monthly Breakdown header
-    st.markdown("<h3 class='section2-header'>Monthly Breakdown</h3>", unsafe_allow_html=True)
+    st.markdown("<h4 class='section2-header'>Monthly Breakdown</h4>", unsafe_allow_html=True)
 
     # Display the subheader for contributions towards goals
     st.markdown(f"<h4 style='color: black;'>1) Monthly contribution towards goals: <span style='color: red;'><b>${int(round(total_contribution))}</b></span></h4>", unsafe_allow_html=True)
@@ -506,6 +506,4 @@ if 'goals' in st.session_state and st.session_state.goals:
 
 
 else:
-    # Add a thick horizontal line for no goals message
-    st.markdown("<hr style='height: 4px; background-color: black;'>", unsafe_allow_html=True)
     st.markdown("<h4>No goals have been added yet.</h4>", unsafe_allow_html=True)
