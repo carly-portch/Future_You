@@ -9,15 +9,17 @@ import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# Load the JSON key file from local storage
-def load_credentials(json_path):
-    with open(json_path) as json_file:
-        return json.load(json_file)
+
 
 # Path to your JSON key file
 json_path = r'C:\1_Business\FinancialTool\Streamlit\GoogleSheets\linear-pursuit-436211-u5-f26c2d8c443c.json'  # Replace with your JSON file path
 credentials = load_credentials(json_path)
 
+# Load the JSON key file from local storage
+def load_credentials(json_path):
+    with open(json_path) as json_file:
+        return json.load(json_file)
+        
 import os
 
 # Debugging: Check if the file exists
