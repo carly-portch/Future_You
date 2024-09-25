@@ -8,6 +8,11 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import os
 
+if not os.path.exists(json_path):
+    st.warning(f"File does not exist: {json_path}")
+else:
+    st.write(f"File exists: {json_path}")
+    
 # Load the JSON key file from local storage
 def load_credentials(json_path):
     if not os.path.exists(json_path):
@@ -16,10 +21,7 @@ def load_credentials(json_path):
     else:
         print(f"File exists: {json_path}")  # Debugging line to confirm file existence
 
-if not os.path.exists(json_path):
-    st.warning(f"File does not exist: {json_path}")
-else:
-    st.write(f"File exists: {json_path}")
+
 
     with open(json_path) as json_file:
         return json.load(json_file)
