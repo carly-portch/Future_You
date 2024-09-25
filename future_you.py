@@ -16,9 +16,9 @@ def load_credentials(json_path):
     else:
         print(f"File exists: {json_path}")  # Debugging line to confirm file existence
 
-    if not os.path.exists(json_path):
+if not os.path.exists(json_path):
     st.warning(f"File does not exist: {json_path}")
-    else:
+else:
     st.write(f"File exists: {json_path}")
 
     with open(json_path) as json_file:
