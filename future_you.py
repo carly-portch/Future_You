@@ -15,7 +15,7 @@ def load_credentials(json_path):
         return json.load(json_file)
 
 # Path to your JSON key file
-json_path = 'C:\1_Business\FinancialTool\Streamlit\GoogleSheets\linear-pursuit-436211-u5-f26c2d8c443c.json'  # Replace with your JSON file path
+json_path = r'C:\1_Business\FinancialTool\Streamlit\GoogleSheets\linear-pursuit-436211-u5-f26c2d8c443c.json'  # Replace with your JSON file path
 credentials = load_credentials(json_path)
 
 # Authorize the Google Sheets API
