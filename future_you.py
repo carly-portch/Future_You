@@ -8,36 +8,6 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import os
 
-import streamlit as st
-import json
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-import os
-
-# Get the path to the credentials JSON file from the environment variable
-json_path = os.getenv("GOOGLE_CREDENTIALS_JSON")
-
-# Check if the file exists and load the JSON credentials
-if json_path and os.path.exists(json_path):
-    st.write(f"Using credentials from: {json_path}")  # Optional: Debugging
-
-    # Load credentials from the JSON file
-    with open(json_path) as json_file:
-        credentials = json.load(json_file)
-
-    # Authorize the Google Sheets API
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials, scope)
-    client = gspread.authorize(creds)
-
-    # Open the Google Sheet
-    sheet = client.open('Future Me Output').sheet1  # Replace with your actual sheet name
-    st.write("Successfully connected to the Google Sheet!")
-else:
-    st.error("Google Sheets credentials not found or the file path is invalid.")
-    st.write(f"Environment variable contents: {json_path}")
-
-
 # Set page config for better layout
 st.set_page_config(layout="wide")
 
