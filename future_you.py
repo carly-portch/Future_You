@@ -4,34 +4,6 @@ import pandas as pd
 import numpy as np
 from datetime import date
 
-#Track users inputs on GoogleSheets
-import streamlit as st
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-import json
-
-# Set up the scope for Google Sheets API
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-
-# Upload the JSON file manually through Streamlit file_uploader
-json_file = st.file_uploader("Upload the Google Sheets API JSON credentials", type=["json"])
-
-if json_file is not None:
-    # Load the JSON credentials from the uploaded file
-    creds_data = json.load(json_file)
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_data, scope)
-    client = gspread.authorize(creds)
-
-    # Open the Google Sheet
-    sheet = client.open('Future Me Output').sheet1  # Make sure the Google Sheet name is correct
-
-    # Now you can track user inputs and write data to Google Sheets
-    # Example: Write a row of data to Google Sheets
-    sheet.append_row(["Sample data", 123, "More sample data"])
-    st.success("Data added to Google Sheets successfully!")
-
-
-
 # Set page config for better layout
 st.set_page_config(layout="wide")
 
