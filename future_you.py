@@ -4,6 +4,29 @@ import pandas as pd
 import numpy as np
 from datetime import date
 
+#To track users in GoogleSheets
+import json
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
+# Load the JSON key file from local storage
+def load_credentials(json_path):
+    with open(json_path) as json_file:
+        return json.load(json_file)
+
+# Path to your JSON key file
+json_path = 'C:\1_Business\FinancialTool\Streamlit\GoogleSheets\linear-pursuit-436211-u5-f26c2d8c443c.json'  # Replace with your JSON file path
+credentials = load_credentials(json_path)
+
+# Authorize the Google Sheets API
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials, scope)
+client = gspread.authorize(creds)
+
+# Open the Google Sheet
+sheet = client.open('Your Google Sheet Name').sheet1  # Replace with your Google Sheet name
+
+
 # Set page config for better layout
 st.set_page_config(layout="wide")
 
