@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "linear-pursuit-436211-u5",
+  "private_key_id": "0a7f61a7f0e82c081f38c69c3b68e510920a95ab",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCyc43YCcNFTYzo\nUGW5domszhBARnQugnL90AGGmPqKSmKDiB+ChnUDU8/Kk9495c6noICSoCTTKH6b\n30cXVkbit9v8/5FQ+i8O2OFrJgwbLSnzpCl0R7Flx40TFUjs7P+aQa5eos8JxOlg\ntmrJZVsYZdNEGPyeoul2KBu/e9iyFDPk3vlVn1gTFDjA4DkE4AFa0DtPcep2UaIy\nq54Wb+0PlMiKN4GJW0dVly3utkUFEH630NkLAlYgVam12EocbzoeaxB/T8NEXBg6\nTqndgFFc8JpCjYBV4Q2nfsIWlqEFzJ8+nRexpVTtVl1S0/H8niovVQHUHtEQsaS1\nWS2SogLXAgMBAAECggEAEFDQXzhFSkjU4Ui4hER6Qfp1Mes/JCF5MguamBvUjGBQ\nsYX4m45/lFZNYVAzuaURR/I8zyslMsk5CjdX4KJayM/WpUMYnjbBprHdqlZINRPk\nCgqwX5lOdufP1jbT/BWPKSNoNe7czx/Z1qXXDaLeuVRWBJvkPPzYK51vLAq+vUlE\nOr/1UXyvzGBO3EA2lfQNEKkms1/nDOmrA4m9GiWeiOm2olBFTQ5zJciD3jTPfhDP\n+lfPzsVv9vhlJxEVL94/nnn9B5Zw1SqSVjvdjD7jEF5uAcpJW91UGjgFdXs8wWwf\nGexhc7xRAQmzFP0/y2XXeQEjsH6ch9p28AV3bwFTwQKBgQDwXi+U5S1zyAC9wpOD\nz+Ih1z2k2jN9GLdJ6509tmxJshchrcRoadVUdkfQS3SPJQaCB1o2Usj1EvlHRKxz\nfq6RytnejhCYcefneetVgj6uOQlBEnBWu9WQTd7soEttiFvYZLuMXUU4OxNZ8peu\nKpOgb3aMXioPuo0s4XcXCyyCDQKBgQC+DonK6gk/2On8Vi3TXN5Mr2XXNF0VqXMK\nz5GYmq+HZrVh/U7ijRPIT0KmJtEEtJ5oN9IkqPYZxZHeiNSAGlvaBpiQjPRMKc5x\nqDKiR5W/MuDsfVh/z8MIIsMNR8fbyv06zRYJGl3b3pQu1tJynjCyIUCxi7t2NV+m\nNGvaLuczcwKBgQCw3p1kkr6/U4w4FdU2SOG8xQU3KNh6VJWKbzVlE7bbA5DB13uO\n2VGAtQhi3SMHsdb4FzDqiEAXFb8YEhBTbARIg1uNyDut8SMT0UK5yP0WdiG5IDhJ\nmi2r4aEHvWvDTXNH59eZkYg9uDqlFT1Hi0zV4S76Ws/Ygw0e2UkoS7CUgQKBgQCg\nMs7wy+6585PfD6EW3NvAFcQo7slbffYrcaTO1ewInIldLE/25GV9XVnXhTZ/2eMA\nA7VNE2JFfOQkiH9d71nm39JvXXB6Vm7eHKF5ag+OF0vB6zHSogRJ8kspAY0z9dkX\nXFEroR7mOqn7BTZkSHTRYPgP77E2xWx3Qw553TkigwKBgBr7ue19P/yrNzregVvD\nlSwe3ttzvS0zeFmahEueVSE5qz/jVNuZBEZh9t+luZphYYifDFltvrJ+Jws1SnzY\nVnOKuEToLAstGV7N614ND3A8zMUCVu6erUAPqmK3IUdt0OD19IJiGLXV0ee3r70k\nABIEUg4NI3X+URuNXmXvGEQZ\n-----END PRIVATE KEY-----\n",
+  "client_email": "finance-app-1@linear-pursuit-436211-u5.iam.gserviceaccount.com",
+  "client_id": "108300883660860105282",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/finance-app-1%40linear-pursuit-436211-u5.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
