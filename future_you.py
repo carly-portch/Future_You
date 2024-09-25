@@ -11,27 +11,27 @@ import os
 # Path to your JSON key file
 json_path = r'C:\1_Business\FinancialTool\Streamlit\GoogleSheets\linear-pursuit-436211-u5-f26c2d8c443c.json'
 
+import os
+import json
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
-if not os.path.exists(json_path):
-    st.warning(f"File does not exist: {json_path}")
+# Load the credentials from the environment variable
+credentials_json = os.getenv("GOOGLE_CREDENTIALS_JSON")
+
+if credentials_json:
+    credentials = json.loads(credentials_json)  # Parse the JSON string
+
+    # Authorize the Google Sheets API
+    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials, scope)
+    client = gspread.authorize(creds)
+
+    # Open the Google Sheet
+    sheet = client.open('Your Google Sheet Name').sheet1
 else:
-    st.write(f"File exists: {json_path}")
-    
-# Load the JSON key file from local storage
-def load_credentials(json_path):
-    if not os.path.exists(json_path):
-        print(f"File does not exist: {json_path}")  # Debugging line to print path error
-        raise FileNotFoundError(f"File not found: {json_path}")  # Raise an error if file not found
-    else:
-        print(f"File exists: {json_path}")  # Debugging line to confirm file existence
+    print("Google Sheets credentials not found. Make sure the environment variable is set.")
 
-
-
-    with open(json_path) as json_file:
-        return json.load(json_file)
-
-
-credentials = load_credentials(json_path)
 
 # Authorize the Google Sheets API
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
