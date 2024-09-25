@@ -8,6 +8,9 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import os
 
+# Path to your JSON key file
+json_path = r'C:\1_Business\FinancialTool\Streamlit\GoogleSheets\linear-pursuit-436211-u5-f26c2d8c443c.json'  # Update this path
+
 if not os.path.exists(json_path):
     st.warning(f"File does not exist: {json_path}")
 else:
@@ -26,8 +29,7 @@ def load_credentials(json_path):
     with open(json_path) as json_file:
         return json.load(json_file)
 
-# Path to your JSON key file
-json_path = r'C:\1_Business\FinancialTool\Streamlit\GoogleSheets\linear-pursuit-436211-u5-f26c2d8c443c.json'  # Update this path
+
 credentials = load_credentials(json_path)
 
 # Authorize the Google Sheets API
