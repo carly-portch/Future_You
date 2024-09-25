@@ -9,7 +9,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 import os
 
 # Path to your JSON key file
-json_path = r'C:\1_Business\FinancialTool\Streamlit\GoogleSheets\linear-pursuit-436211-u5-f26c2d8c443c.json'  # Update this path
+json_path = r'C:\1_Business\FinancialTool\Streamlit\GoogleSheets\linear-pursuit-436211-u5-f26c2d8c443c.json'
+
 
 if not os.path.exists(json_path):
     st.warning(f"File does not exist: {json_path}")
