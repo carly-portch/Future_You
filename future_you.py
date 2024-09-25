@@ -12,7 +12,18 @@ from oauth2client.service_account import ServiceAccountCredentials
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
 # Load the service account credentials
-creds = ServiceAccountCredentials.from_json_keyfile_name('linear-pursuit-436211-u5-0a7f61a7f0e8.json', scope)
+# creds = ServiceAccountCredentials.from_json_keyfile_name('linear-pursuit-436211-u5-0a7f61a7f0e8.json', scope)
+import json
+import os
+from oauth2client.service_account import ServiceAccountCredentials
+
+# Load the credentials from an environment variable
+creds_json = os.getenv("GOOGLE_CREDS_JSON")
+creds_dict = json.loads(creds_json)
+
+# Use the credentials
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+
 
 # Authorize the client
 client = gspread.authorize(creds)
