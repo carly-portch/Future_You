@@ -28,7 +28,7 @@ if credentials_json:
     client = gspread.authorize(creds)
 
     # Open the Google Sheet
-    sheet = client.open('Your Google Sheet Name').sheet1
+    sheet = client.open('Future Me Output').sheet1
 else:
     print("Google Sheets credentials not found. Make sure the environment variable is set.")
 
