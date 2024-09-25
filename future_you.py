@@ -18,6 +18,15 @@ def load_credentials(json_path):
 json_path = r'C:\1_Business\FinancialTool\Streamlit\GoogleSheets\linear-pursuit-436211-u5-f26c2d8c443c.json'  # Replace with your JSON file path
 credentials = load_credentials(json_path)
 
+import os
+
+# Debugging: Check if the file exists
+if not os.path.exists(json_path):
+    print(f"File does not exist: {json_path}")
+else:
+    print(f"File exists: {json_path}")
+
+
 # Authorize the Google Sheets API
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials, scope)
