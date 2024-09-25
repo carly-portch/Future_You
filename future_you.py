@@ -4,6 +4,23 @@ import pandas as pd
 import numpy as np
 from datetime import date
 
+#Track users inputs on GoogleSheets
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
+# Define the scope of the API
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+
+# Load the service account credentials
+creds = ServiceAccountCredentials.from_json_keyfile_name('linear-pursuit-436211-u5-0a7f61a7f0e8.json', scope)
+
+# Authorize the client
+client = gspread.authorize(creds)
+
+# Open the Google Sheet
+sheet = client.open('Future Me Output').sheet1  # Use the correct sheet name or index
+
+
 # Set page config for better layout
 st.set_page_config(layout="wide")
 
