@@ -3,31 +3,30 @@ import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
 from datetime import date
-
-#To track users in GoogleSheets
 import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-
-
-
-# Path to your JSON key file
-json_path = r'C:\1_Business\FinancialTool\Streamlit\GoogleSheets\linear-pursuit-436211-u5-f26c2d8c443c.json'  # Replace with your JSON file path
-credentials = load_credentials(json_path)
+import os
 
 # Load the JSON key file from local storage
 def load_credentials(json_path):
+    if not os.path.exists(json_path):
+        print(f"File does not exist: {json_path}")  # Debugging line to print path error
+        raise FileNotFoundError(f"File not found: {json_path}")  # Raise an error if file not found
+    else:
+        print(f"File exists: {json_path}")  # Debugging line to confirm file existence
+
+    if not os.path.exists(json_path):
+    st.warning(f"File does not exist: {json_path}")
+    else:
+    st.write(f"File exists: {json_path}")
+
     with open(json_path) as json_file:
         return json.load(json_file)
-        
-import os
 
-# Debugging: Check if the file exists
-if not os.path.exists(json_path):
-    print(f"File does not exist: {json_path}")
-else:
-    print(f"File exists: {json_path}")
-
+# Path to your JSON key file
+json_path = r'C:\1_Business\FinancialTool\Streamlit\GoogleSheets\linear-pursuit-436211-u5-f26c2d8c443c.json'  # Update this path
+credentials = load_credentials(json_path)
 
 # Authorize the Google Sheets API
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
@@ -36,7 +35,6 @@ client = gspread.authorize(creds)
 
 # Open the Google Sheet
 sheet = client.open('Your Google Sheet Name').sheet1  # Replace with your Google Sheet name
-
 
 # Set page config for better layout
 st.set_page_config(layout="wide")
