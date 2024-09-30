@@ -500,7 +500,7 @@ if 'goals' in st.session_state and st.session_state.goals:
 
     # Display the remaining money section
     st.markdown(f"""
-        <h5 style='color: black;'>2) Monthly expense limit (input this into the Current You tool): <span style='color: #D22B2B;'><b>${int(round(remaining_for_current_you))}</b></span></h5>
+        <h5 style='color: black;'>2) This is how much money you have left each month after you put money aside for your goals. (Monthly expense limit - input this into the Current You tool): <span style='color: #D22B2B;'><b>${int(round(remaining_for_current_you))}</b></span></h5>
     """, unsafe_allow_html=True)
 
 
