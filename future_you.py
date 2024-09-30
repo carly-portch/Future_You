@@ -98,10 +98,7 @@ body {
 st.markdown("<h1 class='title'>The Future You Tool</h1>", unsafe_allow_html=True)
 st.markdown("""
 <div class='description'>
-    <h5>Play around with designing the life you want to live. Add multiple goals like a down payment, education, or a vacation.
-
-    Have fun and design your dream life! A retirement suggestion will be provided based on 20x your current salary. Please edit the year or amount as it makes sense for you.
-    </h5>
+    <h5>Play around with designing the life you want to live. Add multiple goals like a down payment, education, or a vacation. Have fun and design your dream life! A retirement suggestion will be provided based on 20x your current salary. Please edit the year or amount as it makes sense for you.
 </div>
 """, unsafe_allow_html=True)
 
