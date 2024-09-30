@@ -98,8 +98,10 @@ body {
 st.markdown("<h1 class='title'>The Future You Tool</h1>", unsafe_allow_html=True)
 st.markdown("""
 <div class='description'>
-    <h5>This tool is here to help you visualise your medium and long-term goals. The aim is to help you get clear on what these goals are, their timeline, and how you can make them a reality. This can be used for your family unit, joint goals with a partner, or your own individual financial situation - whatever makes sense for you!
-    Add multiple goals like a down payment, education, or a vacation. Play around with different timelines, goal amounts, etc. Have fun and design your dream life! </h5>
+    <h5>Play around with designing the life you want to live. Add multiple goals like a down payment, education, or a vacation.
+
+    Have fun and design your dream life! A retirement suggestion will be provided based on 20x your current salary. Please edit the year or amount as it makes sense for you.
+    </h5>
 </div>
 """, unsafe_allow_html=True)
 
