@@ -47,7 +47,7 @@ if goal_type == "Monthly Contribution":
         target_date = current_date.replace(month=current_month % 12 + 1, year=current_year + int(np.ceil(months_to_goal / 12)))
 else:
     target_year = st.number_input("Target year (yyyy)", min_value=current_year + 1, step=1, format="%d")
-    target_month = st.selectbox("Target month", list(range(1, 13)), index=current_month - 1)
+    target_month = st.selectbox("Target month (mm)", list(range(1, 13)), index=current_month - 1)
     target_date = date(target_year, target_month, 1)
     months_to_goal = (target_date.year - current_year) * 12 + (target_date.month - current_month)
     rate_of_return_monthly = interest_rate / 100 / 12
@@ -85,12 +85,12 @@ def plot_timeline():
     # Create timeline data
     total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
     timeline_data = {
-        'Year': [current_year] + [goal['target_year'] for goal in st.session_state.goals],
+        'Year': [current_date] + [goal['target_date'] for goal in st.session_state.goals],
         'Event': ['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals],
         'Text': [
-            f"<b>Year:</b> {current_year}<br><b>Monthly contributions towards goals:</b> ${int(round(total_contribution))}<br>"
+            f"<b>Date:</b> {current_date}<br><b>Monthly contributions towards goals:</b> ${int(round(total_contribution))}<br>"
         ] + [
-            f"<b>Year:</b> {goal['target_year']}<br><b>Goal Name:</b> {goal['goal_name']}<br><b>Goal Amount:</b> ${int(round(goal['goal_amount']))}<br><b>Initial Contribution:</b> ${int(round(goal['current_savings']))}<br><b>Monthly Contribution:</b> ${int(round(goal['monthly_contribution']))}"
+            f"<b>Date:</b> {goal['target_date']}<br><b>Goal Name:</b> {goal['goal_name']}<br><b>Goal Amount:</b> ${int(round(goal['goal_amount']))}<br><b>Initial Contribution:</b> ${int(round(goal['current_savings']))}<br><b>Monthly Contribution:</b> ${int(round(goal['monthly_contribution']))}"
             for goal in st.session_state.goals
         ]
     }
@@ -100,7 +100,7 @@ def plot_timeline():
 
     # Add dots for current year and goals
     fig.add_trace(go.Scatter(
-        x=timeline_df['Year'],
+        x=timeline_df['Date'],
         y=[0] * len(timeline_df),
         mode='markers+text',
         marker=dict(size=12, color='black', line=dict(width=2, color='black')), 
@@ -112,13 +112,13 @@ def plot_timeline():
 
     # Add line connecting the dots
     fig.add_trace(go.Scatter(
-        x=timeline_df['Year'],
+        x=timeline_df['Date'],
         y=[0] * len(timeline_df),
         mode='lines',
         line=dict(color='black', width=2)
     ))
 
-    fig.update_layout(xaxis_title='Year', yaxis=dict(visible=False), showlegend=False)
+    fig.update_layout(xaxis_title='Date', yaxis=dict(visible=False), showlegend=False)
     st.plotly_chart(fig, use_container_width=True)
 
 # Show Timeline
