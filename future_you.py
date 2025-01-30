@@ -403,7 +403,6 @@ def plot_timeline():
 
     # Create timeline data
     total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
-    remaining_for_current_you = monthly_income - total_contribution
     timeline_data = {
         'Year': [current_year] + [goal['target_year'] for goal in st.session_state.goals],
         'Event': ['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals],
@@ -460,12 +459,6 @@ if 'goals' in st.session_state and st.session_state.goals:
     for goal in st.session_state.goals:
         st.markdown(f"<li><b>{goal['goal_name']}:</b> ${int(round(goal['monthly_contribution']))}/month</li>", unsafe_allow_html=True)
     st.markdown("</ul>", unsafe_allow_html=True)
-
-    # Display the remaining money section
-    st.markdown(f"""
-        <h5 style='color: black;'>2) This is how much money you have left each month after you put money aside for your goals. (Monthly expense limit - input this into the Current You tool): <span style='color: #D22B2B;'><b>${int(round(remaining_for_current_you))}</b></span></h5>
-    """, unsafe_allow_html=True)
-
 
 else:
     st.markdown("<h4>No goals have been added yet.</h4>", unsafe_allow_html=True)
