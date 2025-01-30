@@ -78,15 +78,15 @@ st.markdown("<h4 class='section2-header'>My Timeline</h4>", unsafe_allow_html=Tr
 def plot_timeline():
     # Get latest goal year for timeline end
     if st.session_state.goals:
-        latest_year = max(goal['target_year'] for goal in st.session_state.goals)
+        latest_date = max(goal['target_date'] for goal in st.session_state.goals)
     else:
-        latest_year=current_year
+        latest_date=current_date
         
     # Create timeline data
     total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
     timeline_data = {
         'Date': [current_date] + [goal['target_date'] for goal in st.session_state.goals],
-        'Event': ['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals],
+        'Event': ['Current Date'] + [goal['goal_name'] for goal in st.session_state.goals],
         'Text': [
             f"<b>Date:</b> {current_date}<br><b>Monthly contributions towards goals:</b> ${int(round(total_contribution))}<br>"
         ] + [
