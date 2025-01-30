@@ -68,3 +68,80 @@ if st.button("Add goal to timeline"):
         st.success(f"Goal '{goal_name}' added successfully.")
     else:
         st.error("Please enter valid values.")
+
+# Outputs Section
+st.markdown("<h2 class='section-header'>Outputs</h2>", unsafe_allow_html=True)
+
+# Timeline section
+st.markdown("<h4 class='section2-header'>My Timeline</h4>", unsafe_allow_html=True)
+
+def plot_timeline():
+    # Get latest goal year for timeline end
+    if st.session_state.goals:
+        latest_year = max(goal['target_year'] for goal in st.session_state.goals)
+    else:
+        latest_year=current_year
+        
+    # Create timeline data
+    total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
+    timeline_data = {
+        'Year': [current_year] + [goal['target_year'] for goal in st.session_state.goals],
+        'Event': ['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals],
+        'Text': [
+            f"<b>Year:</b> {current_year}<br><b>Monthly contributions towards goals:</b> ${int(round(total_contribution))}<br>"
+        ] + [
+            f"<b>Year:</b> {goal['target_year']}<br><b>Goal Name:</b> {goal['goal_name']}<br><b>Goal Amount:</b> ${int(round(goal['goal_amount']))}<br><b>Initial Contribution:</b> ${int(round(goal['current_savings']))}<br><b>Monthly Contribution:</b> ${int(round(goal['monthly_contribution']))}"
+            for goal in st.session_state.goals
+        ]
+    }
+    timeline_df = pd.DataFrame(timeline_data)
+
+    fig = go.Figure()
+
+    # Add dots for current year and goals
+    fig.add_trace(go.Scatter(
+        x=timeline_df['Year'],
+        y=[0] * len(timeline_df),
+        mode='markers+text',
+        marker=dict(size=12, color='black', line=dict(width=2, color='black')), 
+        text=timeline_df['Event'],
+        textposition='top center',
+        hoverinfo='text',
+        hovertext=timeline_df['Text']
+    ))
+
+    # Add line connecting the dots
+    fig.add_trace(go.Scatter(
+        x=timeline_df['Year'],
+        y=[0] * len(timeline_df),
+        mode='lines',
+        line=dict(color='black', width=2)
+    ))
+
+    fig.update_layout(xaxis_title='Year', yaxis=dict(visible=False), showlegend=False)
+    st.plotly_chart(fig, use_container_width=True)
+
+# Show Timeline
+plot_timeline()
+
+
+# Monthly Contribution Results Section
+# Check if goals exist in session state
+if 'goals' in st.session_state and st.session_state.goals:
+    total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
+
+    # Display the Monthly Breakdown header
+    st.markdown("<h4 class='section2-header'>Monthly Breakdown</h4>", unsafe_allow_html=True)
+
+    # Display the subheader for contributions towards goals
+    st.markdown(f"<h5 style='color: black;'>1) Monthly contribution towards goals: <span style='color: indigo;'><b>${int(round(total_contribution))}</b></span></h5>", unsafe_allow_html=True)
+
+    # Loop through the goals and include them in the list
+    st.markdown("<ul>", unsafe_allow_html=True)
+    for goal in st.session_state.goals:
+        st.markdown(f"<li><b>{goal['goal_name']}:</b> ${int(round(goal['monthly_contribution']))}/month</li>", unsafe_allow_html=True)
+    st.markdown("</ul>", unsafe_allow_html=True)
+
+else:
+    st.markdown("<h4>No goals have been added yet.</h4>", unsafe_allow_html=True)
+
