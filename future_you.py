@@ -216,7 +216,7 @@ if st.button("Add goal to timeline"):
         st.session_state.goals.append(new_goal)
         st.success(f"Goal '{goal_name}' added successfully.")
     else:
-        st.error("Please enter a valid goal name, amount, and Initial contribution.")
+        st.error("Please enter a valid goal name, amount, and initial contribution.")
 
 # Sidebar for managing goals
 st.sidebar.header("Manage Goals")
@@ -398,7 +398,9 @@ def plot_timeline():
     # Get latest goal year for timeline end
     if st.session_state.goals:
         latest_year = max(goal['target_year'] for goal in st.session_state.goals)
-
+    else:
+        latest_year=current_year
+        
     # Create timeline data
     total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
     timeline_data = {
