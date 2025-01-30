@@ -292,34 +292,15 @@ for index, goal in enumerate(st.session_state.goals):
                 key=f"edit_current_savings_{index}"
             )
             
-# Define default rates of return for different account types
-account_types = {
-    "High-Yield Savings": 4.5,  # Example rate, adjust as needed
-    "Regular Savings": 1.0,
-    "Investing Account": 7.0
-}
-
-# Dropdown for selecting account type
-selected_account = st.selectbox(
-    "Select the type of account for savings/investment:",
-    options=list(account_types.keys()),
-    index=list(account_types.keys()).index("Regular Savings"),  # Default to Regular Savings
-    key=f"account_type_{index}"
-)
-
-# Automatically set the interest rate based on selection
-default_rate = account_types[selected_account]
-
-# Allow users to adjust the rate if they want
 edited_interest_rate = st.number_input(
-    "Rate of return or interest rate (%)",
-    value=default_rate,
-    min_value=0.0,
-    max_value=100.0,
-    step=0.1,
-    format="%.1f",
-    key=f"edit_rate_{index}"
-)
+                "Rate of return or interest rate (%)",
+                value=goal['interest_rate'],
+                min_value=0.0,
+                max_value=100.0,
+                step=0.1,
+                format="%.1f",
+                key=f"edit_rate_{index}"
+            )
 
             
             edited_goal_type = st.radio(
