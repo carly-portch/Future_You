@@ -255,22 +255,7 @@ for index, goal in enumerate(st.session_state.goals):
                 format="%.2f",
                 key=f"edit_current_savings_{index}"
             )
-            
-            edited_interest_rate = st.number_input(
-                "Rate of return or interest rate (%)",
-                value=goal['interest_rate'],
-                min_value=0.0,
-                max_value=100.0,
-                step=0.1,
-                format="%.1f",
-                key=f"edit_rate_{index}"
-            )
-            # Define default rates of return for different account types
-            account_types = {
-                "High-Yield Savings": 4.5,  # Example rate, adjust as needed
-                "Regular Savings": 1.0,
-                "Investing Account": 7.0
-            }
+
             
             # Dropdown for selecting account type
             selected_account = st.selectbox(
@@ -280,17 +265,8 @@ for index, goal in enumerate(st.session_state.goals):
             )
             
             # Automatically set the interest rate based on selection
-            default_rate = account_types[selected_account]
+            interest_rate = account_types[selected_account]
             
-            # Allow users to adjust the rate if they want
-            edited_interest_rate = st.number_input(
-                "Rate of return or interest rate (%)",
-                value=default_rate,
-                min_value=0.0,
-                max_value=100.0,
-                step=0.1,
-                format="%.1f",
-            )
             edited_goal_type = st.radio(
                 "Select how you want to calculate your goal",
                 ["Target Year", "Monthly Contribution"],
@@ -309,7 +285,7 @@ for index, goal in enumerate(st.session_state.goals):
                 )
                 # Recalculate target_year based on new contribution
                 if edited_contribution_amount > 0 and edited_goal_amount > 0:
-                    rate_of_return_monthly = edited_interest_rate / 100 / 12
+                    rate_of_return_monthly = interest_rate / 100 / 12
                     if rate_of_return_monthly > 0:
                         try:
                             # Adjusted for current_savings
@@ -339,7 +315,7 @@ for index, goal in enumerate(st.session_state.goals):
             if st.button("Update Goal", key=f"update_{index}"):
                 if edited_goal_type == "Target Year":
                     months_to_goal = 12 * (int(edited_target_year) - current_year)
-                    rate_of_return_monthly = edited_interest_rate / 100 / 12
+                    rate_of_return_monthly = interest_rate / 100 / 12
                     if months_to_goal <= 0:
                         st.error("Target year must be greater than the current year.")
                         st.stop()
@@ -354,7 +330,7 @@ for index, goal in enumerate(st.session_state.goals):
                 else:
                     # For "Monthly Contribution", recalculate target_year
                     contribution_amount = edited_contribution_amount
-                    rate_of_return_monthly = edited_interest_rate / 100 / 12
+                    rate_of_return_monthly = interest_rate / 100 / 12
                     if contribution_amount <= 0:
                         st.error("Monthly contribution must be greater than zero.")
                         st.stop()
@@ -382,7 +358,7 @@ for index, goal in enumerate(st.session_state.goals):
                     'goal_name': edited_goal_name,
                     'goal_amount': int(edited_goal_amount),
                     'current_savings': float(round(edited_current_savings, 2)),
-                    'interest_rate': round(edited_interest_rate, 2),
+                    'interest_rate': round(interest_rate, 2),
                     'monthly_contribution': edited_monthly_contribution,
                     'target_year': int(edited_target_year),
                     'goal_type': edited_goal_type
@@ -432,8 +408,6 @@ def plot_timeline():
         'Year': [current_year] + [goal['target_year'] for goal in st.session_state.goals],
         'Event': ['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals],
         'Text': [
-            f"<b>Year:</b> {current_year}<br><b>Monthly Income:</b> ${int(round(monthly_income))}<br><b>Monthly contributions towards goals:</b> ${int(round(total_contribution))}<br><b>Monthly money remaining for current you:</b> ${int(round(remaining_for_current_you))}"
-        ] + [
             f"<b>Year:</b> {goal['target_year']}<br><b>Goal Name:</b> {goal['goal_name']}<br><b>Goal Amount:</b> ${int(round(goal['goal_amount']))}<br><b>Initial Contribution:</b> ${int(round(goal['current_savings']))}<br><b>Monthly Contribution:</b> ${int(round(goal['monthly_contribution']))}"
             for goal in st.session_state.goals
         ]
