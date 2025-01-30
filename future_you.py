@@ -116,43 +116,6 @@ if 'edit_goal_index' not in st.session_state:
 # Inputs Section
 st.markdown("<h2 class='section-header'>Inputs</h2>", unsafe_allow_html=True)
 
-# Input fields for income
-monthly_income = st.number_input(
-    "Enter your total monthly income after tax:",
-    min_value=0.0,
-    step=100.0,
-    format="%.2f"
-)
-
-# Add default 'Retirement' goal if not already added and monthly income is provided
-if not st.session_state.retirement_goal_added and monthly_income > 0:
-    retirement_goal = {
-        'goal_name': 'Retirement',
-        'goal_amount': int(round(monthly_income * 12 * 25)),
-        'current_savings': 0.0,  # Initialize with zero savings as float
-        'interest_rate': 7.0,
-        'monthly_contribution': None,  # Will be calculated below
-        'target_year': current_year + 40,
-        'goal_type': 'Target Year'
-    }
-    # Calculate monthly contribution for the retirement goal
-    months_to_goal = 12 * (retirement_goal['target_year'] - current_year)
-    rate_of_return_monthly = retirement_goal['interest_rate'] / 100 / 12
-    if months_to_goal <= 0:
-        st.error("Retirement goal target year must be greater than the current year.")
-    else:
-        if rate_of_return_monthly > 0:
-            denominator = (1 + rate_of_return_monthly) ** months_to_goal - 1
-            if denominator == 0:
-                st.error("Invalid calculation for retirement goal due to zero denominator.")
-            else:
-                retirement_goal['monthly_contribution'] = (retirement_goal['goal_amount'] - retirement_goal['current_savings'] * (1 + rate_of_return_monthly) ** months_to_goal) * rate_of_return_monthly / denominator
-        else:
-            retirement_goal['monthly_contribution'] = (retirement_goal['goal_amount'] - retirement_goal['current_savings']) / months_to_goal
-        retirement_goal['monthly_contribution'] = int(round(retirement_goal['monthly_contribution']))
-        st.session_state.goals.append(retirement_goal)
-        st.session_state.retirement_goal_added = True
-
 # Goal Addition
 st.markdown("<h4 class='section2-header'>Add a New Goal</h4>", unsafe_allow_html=True)
 goal_name = st.text_input("Name of goal")
@@ -174,9 +137,9 @@ account_type = st.radio("Select what type of account you'll use for this goal", 
 if account_type == "Regular Savings Account":
     interest_rate=0.0
 elif account_type == "High-Yield Savings Account":
-    interest_rate=0.02
+    interest_rate=2.0
 elif account_type == "Invested Account":
-    interest_rate=0.06
+    interest_rate=6.0
     
 goal_type = st.radio("Select how you want to calculate your goal", ["Target Year", "Monthly Contribution"])
 
