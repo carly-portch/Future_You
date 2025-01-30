@@ -292,7 +292,7 @@ for index, goal in enumerate(st.session_state.goals):
                 key=f"edit_current_savings_{index}"
             )
             
-edited_interest_rate = st.number_input(
+            edited_interest_rate = st.number_input(
                 "Rate of return or interest rate (%)",
                 value=goal['interest_rate'],
                 min_value=0.0,
