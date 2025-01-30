@@ -169,8 +169,8 @@ if goal_type == "Monthly Contribution":
 elif goal_type == "Target Date":
     target_date = st.number_input(
         "Target date to reach this goal (yyyy)",
-        min_value=current_date + 1,
-        step=1,
+        min_value=current_date + datetime.timedelta(days=1),
+        step=datetime.timedelta(days=1),
         format="%d"
     )
     contribution_amount = None
