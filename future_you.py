@@ -103,7 +103,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Initialize variables
-current_year = date.today().year
+current_date = date.today().date
 
 # Initialize session state for goals and edit tracking
 if 'goals' not in st.session_state:
@@ -141,7 +141,7 @@ elif account_type == "High-Yield Savings Account":
 elif account_type == "Invested Account":
     interest_rate=6.0
     
-goal_type = st.radio("Select how you want to calculate your goal", ["Target Year", "Monthly Contribution"])
+goal_type = st.radio("Select how you want to calculate your goal", ["Target Date", "Monthly Contribution"])
 
 if goal_type == "Monthly Contribution":
     contribution_amount = st.number_input(
@@ -156,20 +156,20 @@ if goal_type == "Monthly Contribution":
             try:
                 # Adjusted for current_savings
                 future_value_contributions = contribution_amount * ((1 + rate_of_return_monthly) ** (12 * 100) - 1) / rate_of_return_monthly
-                target_year = current_year + int(np.ceil(np.log((goal_amount - current_savings * (1 + rate_of_return_monthly) ** (12 * 100)) / (contribution_amount * rate_of_return_monthly) + 1) / np.log(1 + rate_of_return_monthly)))
+                target_date = current_date + int(np.ceil(np.log((goal_amount - current_savings * (1 + rate_of_return_monthly) ** (12 * 100)) / (contribution_amount * rate_of_return_monthly) + 1) / np.log(1 + rate_of_return_monthly)))
             except:
                 st.error("Invalid calculation for months to goal.")
-                target_year = current_year + 1
+                target_date = current_date + 1
         else:
             try:
                 months_to_goal = (goal_amount - current_savings) / contribution_amount
-                target_year = current_year + int(np.ceil(months_to_goal / 12))
+                target_date = current_date + int(np.ceil(months_to_goal / 12))
             except:
-                target_year = current_year + 1
-elif goal_type == "Target Year":
+                target_date = current_date + 1
+elif goal_type == "Target Date":
     target_year = st.number_input(
-        "Target year to reach this goal (yyyy)",
-        min_value=current_year + 1,
+        "Target date to reach this goal (yyyy)",
+        min_value=current_date + 1,
         step=1,
         format="%d"
     )
@@ -182,16 +182,16 @@ if st.button("Add goal to timeline"):
             if contribution_amount is None or contribution_amount <= 0:
                 st.error("Please enter a valid monthly contribution amount.")
                 st.stop()
-            target_year = int(target_year)
+            target_date = int(target_date)
             monthly_contribution = contribution_amount
-        elif goal_type == "Target Year":
-            if target_year is None or target_year <= current_year:
-                st.error("Please enter a valid target year.")
+        elif goal_type == "Target Date":
+            if target_date is None or target_date <= current_date:
+                st.error("Please enter a valid target date.")
                 st.stop()
-            months_to_goal = 12 * (int(target_year) - current_year)
+            months_to_goal = 12 * (int(target_date) - current_date)
             rate_of_return_monthly = interest_rate / 100 / 12
             if months_to_goal <= 0:
-                st.error("Target year must be greater than the current year.")
+                st.error("Target date must be greater than the current date.")
                 st.stop()
             if rate_of_return_monthly > 0:
                 denominator = (1 + rate_of_return_monthly) ** months_to_goal - 1
@@ -210,7 +210,7 @@ if st.button("Add goal to timeline"):
             'current_savings': float(round(current_savings, 2)),
             'interest_rate': round(interest_rate, 2),
             'monthly_contribution': monthly_contribution,  # Ensure integer
-            'target_year': int(target_year),
+            'target_date': int(target_date),
             'goal_type': goal_type  # Store goal type for display
         }
         st.session_state.goals.append(new_goal)
@@ -223,7 +223,7 @@ st.sidebar.header("Manage Goals")
 
 # Manage goals section
 for index, goal in enumerate(st.session_state.goals):
-    with st.sidebar.expander(f"{goal['goal_name']} (Target Year: {goal['target_year']}, Monthly Contribution: ${goal['monthly_contribution']})"):
+    with st.sidebar.expander(f"{goal['goal_name']} (Target Date: {goal['target_date']}, Monthly Contribution: ${goal['monthly_contribution']})"):
         st.write(f"**Goal Amount:** ${goal['goal_amount']}")
         st.write(f"**Initial contribution:** ${int(round(goal['current_savings']))}")
         st.write(f"**Interest Rate:** {goal['interest_rate']}%")
@@ -298,17 +298,17 @@ for index, goal in enumerate(st.session_state.goals):
                     else:
                         try:
                             months_to_goal = (edited_goal_amount - edited_current_savings) / edited_contribution_amount
-                            target_year_calculated = current_year + int(np.ceil(months_to_goal / 12))
+                            target_date_calculated = current_date + int(np.ceil(months_to_goal / 12))
                         except:
-                            target_year_calculated = current_year + 1
-            elif edited_goal_type == "Target Year":
+                            target_date_calculated = current_date + 1
+            elif edited_goal_type == "Target Date":
                 edited_target_year = st.number_input(
-                    "Target Year",
-                    value=goal['target_year'],
-                    min_value=current_year + 1,
+                    "Target Date",
+                    value=goal['target_date'],
+                    min_value=current_date + 1,
                     step=1,
                     format="%d",
-                    key=f"edit_target_year_{index}"
+                    key=f"edit_target_date_{index}"
                 )
             
             # Update button
