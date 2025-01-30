@@ -169,14 +169,6 @@ current_savings = st.number_input(
     format="%.2f",
     value=0.0
 )
-interest_rate = st.number_input(
-    "Rate of return or interest rate (%)",
-    min_value=0.0,
-    max_value=100.0,
-    value=5.0,
-    step=0.1,
-    format="%.1f"
-)
 account_type = st.radio("Select what type of account you'll use for this goal", ["Regular Savings Account", "High-Yield Savings Account", "Invested Account"])
 
 if account_type == "Regular Savings Account":
