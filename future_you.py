@@ -177,6 +177,18 @@ interest_rate = st.number_input(
     step=0.1,
     format="%.1f"
 )
+account_type = st.radio("Select what type of account you'll use for this goal", ["Regular Savings Account", "High-Yield Savings Account", "Invested Account"])
+
+if account_type == "Regular Savings Account":
+    interest_rate=0.0
+    )
+elif account_type == "High-Yield Savings Account":
+    interest_rate=0.02
+    )
+elif account_type == "Invested Account":
+    interest_rate=0.06
+    )
+    
 goal_type = st.radio("Select how you want to calculate your goal", ["Target Year", "Monthly Contribution"])
 
 if goal_type == "Monthly Contribution":
