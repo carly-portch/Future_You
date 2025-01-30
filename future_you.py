@@ -167,7 +167,7 @@ if goal_type == "Monthly Contribution":
             except:
                 target_date = current_date + 1
 elif goal_type == "Target Date":
-    target_year = st.number_input(
+    target_date = st.number_input(
         "Target date to reach this goal (yyyy)",
         min_value=current_date + 1,
         step=1,
