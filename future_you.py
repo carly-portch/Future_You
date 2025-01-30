@@ -85,7 +85,7 @@ def plot_timeline():
     # Create timeline data
     total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
     timeline_data = {
-        'Year': [current_date] + [goal['target_date'] for goal in st.session_state.goals],
+        'Date': [current_date] + [goal['target_date'] for goal in st.session_state.goals],
         'Event': ['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals],
         'Text': [
             f"<b>Date:</b> {current_date}<br><b>Monthly contributions towards goals:</b> ${int(round(total_contribution))}<br>"
