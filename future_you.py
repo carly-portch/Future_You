@@ -103,7 +103,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Initialize variables
-current_date = date.today().date
+current_date = date.today()
 
 # Initialize session state for goals and edit tracking
 if 'goals' not in st.session_state:
