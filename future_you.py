@@ -269,8 +269,8 @@ for index, goal in enumerate(st.session_state.goals):
             
             edited_goal_type = st.radio(
                 "Select how you want to calculate your goal",
-                ["Target Year", "Monthly Contribution"],
-                index=0 if goal['goal_type'] == "Target Year" else 1,
+                ["Target Date", "Monthly Contribution"],
+                index=0 if goal['goal_type'] == "Target Date" else 1,
                 key=f"edit_goal_type_{index}"
             )
             
@@ -291,10 +291,10 @@ for index, goal in enumerate(st.session_state.goals):
                             # Adjusted for current_savings
                             # Using future value formula to estimate months_to_goal
                             months_to_goal = np.log(1 + (edited_goal_amount - edited_current_savings * (1 + rate_of_return_monthly) ** (12 * 100)) / (edited_contribution_amount * rate_of_return_monthly)) / np.log(1 + rate_of_return_monthly)
-                            target_year_calculated = current_year + int(np.ceil(months_to_goal / 12))
+                            target_date_calculated = current_date + int(np.ceil(months_to_goal / 12))
                         except:
                             st.error("Invalid calculation for months to goal.")
-                            target_year_calculated = current_year + 1
+                            target_date_calculated = current_date + 1
                     else:
                         try:
                             months_to_goal = (edited_goal_amount - edited_current_savings) / edited_contribution_amount
@@ -302,7 +302,7 @@ for index, goal in enumerate(st.session_state.goals):
                         except:
                             target_date_calculated = current_date + 1
             elif edited_goal_type == "Target Date":
-                edited_target_year = st.number_input(
+                edited_target_date = st.number_input(
                     "Target Date",
                     value=goal['target_date'],
                     min_value=current_date + 1,
@@ -313,11 +313,11 @@ for index, goal in enumerate(st.session_state.goals):
             
             # Update button
             if st.button("Update Goal", key=f"update_{index}"):
-                if edited_goal_type == "Target Year":
-                    months_to_goal = 12 * (int(edited_target_year) - current_year)
+                if edited_goal_type == "Target Date":
+                    months_to_goal = 12 * (int(edited_target_date) - current_date)
                     rate_of_return_monthly = interest_rate / 100 / 12
                     if months_to_goal <= 0:
-                        st.error("Target year must be greater than the current year.")
+                        st.error("Target date must be greater than the current date.")
                         st.stop()
                     if rate_of_return_monthly > 0:
                         denominator = (1 + rate_of_return_monthly) ** months_to_goal - 1
@@ -328,7 +328,7 @@ for index, goal in enumerate(st.session_state.goals):
                     else:
                         edited_monthly_contribution = (edited_goal_amount - edited_current_savings) / months_to_goal
                 else:
-                    # For "Monthly Contribution", recalculate target_year
+                    # For "Monthly Contribution", recalculate target_date
                     contribution_amount = edited_contribution_amount
                     rate_of_return_monthly = interest_rate / 100 / 12
                     if contribution_amount <= 0:
@@ -338,20 +338,20 @@ for index, goal in enumerate(st.session_state.goals):
                         try:
                             # Adjusted for current_savings
                             months_to_goal = np.log(1 + (edited_goal_amount - edited_current_savings * (1 + rate_of_return_monthly) ** months_to_goal) / (contribution_amount * rate_of_return_monthly)) / np.log(1 + rate_of_return_monthly)
-                            edited_target_year = current_year + int(np.ceil(months_to_goal / 12))
+                            edited_target_date = current_date + int(np.ceil(months_to_goal / 12))
                         except:
                             st.error("Invalid calculation for months to goal.")
-                            edited_target_year = current_year + 1
+                            edited_target_date = current_date + 1
                     else:
                         try:
                             months_to_goal = (edited_goal_amount - edited_current_savings) / contribution_amount
-                            edited_target_year = current_year + int(np.ceil(months_to_goal / 12))
+                            edited_target_date = current_date + int(np.ceil(months_to_goal / 12))
                         except:
-                            edited_target_year = current_year + 1
+                            edited_target_date = current_date + 1
                     edited_monthly_contribution = int(round(contribution_amount))
                 
                 # Ensure monthly_contribution is integer after recalculation
-                edited_monthly_contribution = int(round(edited_monthly_contribution)) if edited_goal_type == "Target Year" else int(round(edited_monthly_contribution))
+                edited_monthly_contribution = int(round(edited_monthly_contribution)) if edited_goal_type == "Target Date" else int(round(edited_monthly_contribution))
                 
                 # Update the goal values in the session state
                 st.session_state.goals[index] = {
@@ -360,7 +360,7 @@ for index, goal in enumerate(st.session_state.goals):
                     'current_savings': float(round(edited_current_savings, 2)),
                     'interest_rate': round(interest_rate, 2),
                     'monthly_contribution': edited_monthly_contribution,
-                    'target_year': int(edited_target_year),
+                    'target_date': int(edited_target_date),
                     'goal_type': edited_goal_type
                 }
                 st.success(f"Goal '{edited_goal_name}' updated successfully.")
@@ -395,21 +395,21 @@ st.markdown("<h2 class='section-header'>Outputs</h2>", unsafe_allow_html=True)
 st.markdown("<h4 class='section2-header'>My Timeline</h4>", unsafe_allow_html=True)
 
 def plot_timeline():
-    # Get latest goal year for timeline end
+    # Get latest goal date for timeline end
     if st.session_state.goals:
-        latest_year = max(goal['target_year'] for goal in st.session_state.goals)
+        latest_date = max(goal['target_date'] for goal in st.session_state.goals)
     else:
-        latest_year=current_year
+        latest_date=current_date
         
     # Create timeline data
     total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
     timeline_data = {
-        'Year': [current_year] + [goal['target_year'] for goal in st.session_state.goals],
-        'Event': ['Current Year'] + [goal['goal_name'] for goal in st.session_state.goals],
+        'Date': [current_date] + [goal['target_date'] for goal in st.session_state.goals],
+        'Event': ['Current Date'] + [goal['goal_name'] for goal in st.session_state.goals],
         'Text': [
-            f"<b>Year:</b> {current_year}<br><b>Monthly contributions towards goals:</b> ${int(round(total_contribution))}<br>"
+            f"<b>Date:</b> {current_date}<br><b>Monthly contributions towards goals:</b> ${int(round(total_contribution))}<br>"
         ] + [
-            f"<b>Year:</b> {goal['target_year']}<br><b>Goal Name:</b> {goal['goal_name']}<br><b>Goal Amount:</b> ${int(round(goal['goal_amount']))}<br><b>Initial Contribution:</b> ${int(round(goal['current_savings']))}<br><b>Monthly Contribution:</b> ${int(round(goal['monthly_contribution']))}"
+            f"<b>Date:</b> {goal['target_date']}<br><b>Goal Name:</b> {goal['goal_name']}<br><b>Goal Amount:</b> ${int(round(goal['goal_amount']))}<br><b>Initial Contribution:</b> ${int(round(goal['current_savings']))}<br><b>Monthly Contribution:</b> ${int(round(goal['monthly_contribution']))}"
             for goal in st.session_state.goals
         ]
     }
@@ -419,7 +419,7 @@ def plot_timeline():
 
     # Add dots for current year and goals
     fig.add_trace(go.Scatter(
-        x=timeline_df['Year'],
+        x=timeline_df['Date'],
         y=[0] * len(timeline_df),
         mode='markers+text',
         marker=dict(size=12, color='black', line=dict(width=2, color='black')), 
@@ -431,13 +431,13 @@ def plot_timeline():
 
     # Add line connecting the dots
     fig.add_trace(go.Scatter(
-        x=timeline_df['Year'],
+        x=timeline_df['Date'],
         y=[0] * len(timeline_df),
         mode='lines',
         line=dict(color='black', width=2)
     ))
 
-    fig.update_layout(xaxis_title='Year', yaxis=dict(visible=False), showlegend=False)
+    fig.update_layout(xaxis_title='Date', yaxis=dict(visible=False), showlegend=False)
     st.plotly_chart(fig, use_container_width=True)
 
 # Show Timeline
