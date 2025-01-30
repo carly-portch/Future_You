@@ -398,8 +398,6 @@ def plot_timeline():
     # Get latest goal year for timeline end
     if st.session_state.goals:
         latest_year = max(goal['target_year'] for goal in st.session_state.goals)
-    else:
-        latest_year = current_year
 
     # Create timeline data
     total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
@@ -446,7 +444,6 @@ plot_timeline()
 # Check if goals exist in session state
 if 'goals' in st.session_state and st.session_state.goals:
     total_contribution = sum(goal['monthly_contribution'] for goal in st.session_state.goals)
-    remaining_for_current_you = monthly_income - total_contribution
 
     # Display the Monthly Breakdown header
     st.markdown("<h4 class='section2-header'>Monthly Breakdown</h4>", unsafe_allow_html=True)
