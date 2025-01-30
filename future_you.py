@@ -95,10 +95,10 @@ body {
 """, unsafe_allow_html=True)
 
 # Title and Description
-st.markdown("<h1 class='title'>The Future You Tool</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='title'>The Goal Planning Tool</h1>", unsafe_allow_html=True)
 st.markdown("""
 <div class='description'>
-    <h5>Welcome to the Goal Planner Tool! Add multiple goals like a vacation, down payment, education, or a big purchase. Please edit your list of goals in the "Manage Goals" left panel.
+    <h5>Add multiple goals like a vacation, down payment, education, or a big purchase. Please edit your list of goals in the "Manage Goals" left panel.
 </div>
 """, unsafe_allow_html=True)
 
