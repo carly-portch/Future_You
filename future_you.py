@@ -177,13 +177,27 @@ if "edit_index" in st.session_state:
     ], index=["Regular Savings Account (0%)", "High-Yield Savings Account (2%)", "Invested Account (6%)"].index(st.session_state.goals[index]['Account Type']))
     
     if st.button("Save Changes"):
+        # Recalculate target date or monthly contribution when editing
+        new_goal_amount = edited_amount
+        new_initial_contribution = edited_initial
+        new_rate = rates[edited_account_type]
+
+        # Recalculate target date if goal amount or monthly contribution is changed
+        if edited_contribution is not None and edited_contribution > 0:
+            new_target_date = datetime.date.today() + datetime.timedelta(
+                days=int(np.ceil(calculate_months(new_goal_amount, new_initial_contribution, new_rate, edited_contribution) * 30))
+            )
+        else:
+            new_target_date = edited_date
+        
+        # Update goal
         st.session_state.goals[index] = {
             "Goal Name": edited_name,
-            "Goal Amount": edited_amount,
-            "Initial Contribution": edited_initial,
-            "Target Date": edited_date,
+            "Goal Amount": new_goal_amount,
+            "Initial Contribution": new_initial_contribution,
+            "Target Date": new_target_date,
             "Account Type": edited_account_type,
-            "Monthly Contribution": edited_contribution
+            "Monthly Contribution": edited_contribution if edited_contribution else calculate_monthly_contribution(new_goal_amount, new_initial_contribution, new_rate, (new_target_date.year - datetime.date.today().year) * 12)
         }
         del st.session_state.edit_index
         st.rerun()
