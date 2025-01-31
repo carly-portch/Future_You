@@ -64,11 +64,14 @@ if st.button("Add Goal"):
         "Target Date": target_date,
         "Monthly Contribution": monthly_contribution
     })
+    st.experimental_rerun()
 
-years = sorted(set(goal["Target Date"].year for goal in st.session_state.goals))
-df = {"Year": years, "Amount Saved": np.linspace(0, max(goal["Goal Amount"] for goal in st.session_state.goals), len(years))}
-fig = px.line(df, x="Year", y="Amount Saved", title="Goal Timeline")
-st.plotly_chart(fig)
+if st.session_state.goals:
+    years = sorted(set(goal["Target Date"].year for goal in st.session_state.goals))
+    amounts = [goal["Goal Amount"] for goal in st.session_state.goals]
+    df = {"Year": years, "Amount Saved": np.linspace(0, max(amounts), len(years))}
+    fig = px.line(df, x="Year", y="Amount Saved", title="Goal Timeline")
+    st.plotly_chart(fig)
 
 st.subheader("Goals List")
 
