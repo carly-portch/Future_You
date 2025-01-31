@@ -50,6 +50,7 @@ rate = rates[account_type]
 option = st.radio("Choose one:", ["Set Target Date", "Set Monthly Contribution"])
 
 monthly_contribution = None
+target_date = None
 if option == "Set Target Date":
     target_date = st.date_input("Target Date", min_value=datetime.date.today())
     months = (target_date.year - datetime.date.today().year) * 12 + (target_date.month - datetime.date.today().month)
@@ -59,11 +60,15 @@ if option == "Set Target Date":
 else:
     monthly_contribution = st.number_input("Monthly Contribution ($)", min_value=0.01, step=0.01)
     months = calculate_months(goal_amount, initial_contribution, rate, monthly_contribution)
-    target_date = datetime.date.today() + datetime.timedelta(days=int(months * 30))
-    st.write(f"Goal Achieved By: **{target_date.strftime('%Y-%m-%d')}**")
+    if months == float('inf') or months > 1200:  # Prevent excessive future dates
+        st.error("Monthly contribution is too low to ever reach the goal.")
+        target_date = None
+    else:
+        target_date = datetime.date.today() + datetime.timedelta(days=int(min(months * 30, 365 * 100)))
+        st.write(f"Goal Achieved By: **{target_date.strftime('%Y-%m-%d')}**")
 
 if st.button("Add Goal"):
-    if goal_name and goal_amount and monthly_contribution:
+    if goal_name and goal_amount and monthly_contribution and target_date:
         st.session_state.goals.append({
             "Goal Name": goal_name,
             "Goal Amount": goal_amount,
