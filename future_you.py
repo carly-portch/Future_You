@@ -167,7 +167,13 @@ if "edit_index" in st.session_state:
     st.write("## Edit Goal")
     edited_name = st.text_input("Edit Goal Name", value=st.session_state.goals[index]['Goal Name'])
     edited_amount = st.number_input("Edit Goal Amount ($)", min_value=0.01, step=0.01, value=st.session_state.goals[index]['Goal Amount'])
-    edited_initial = st.number_input("Edit Initial Contribution ($)", min_value=0.01, step=0.01, value=st.session_state.goals[index]['Initial Contribution'])
+    edited_initial = st.number_input(
+    "Edit Initial Contribution ($)",
+    min_value=0.0,
+    step=0.01,
+    value=max(st.session_state.goals[index]['Initial Contribution'], 0.01)  # Ensure it's at least 0.01
+)
+
     edited_date = st.date_input("Edit Target Date", value=st.session_state.goals[index]['Target Date'])
     edited_contribution = st.number_input("Edit Monthly Contribution ($)", min_value=0.01, step=0.01, value=st.session_state.goals[index]['Monthly Contribution'])
     edited_account_type = st.selectbox("Edit Account Type", [
