@@ -23,6 +23,9 @@ def calculate_months(goal_amount, initial_contribution, rate, monthly_contributi
 # Streamlit App UI
 st.title("Financial Goal Tracker")
 
+if "goals" not in st.session_state:
+    st.session_state.goals = []
+
 goal_name = st.text_input("Goal Name")
 goal_amount = st.number_input("Goal Amount ($)", min_value=0.01, step=0.01)
 initial_contribution = st.number_input("Initial Contribution ($)", min_value=0.0, step=0.01)
@@ -55,14 +58,22 @@ else:
     st.write(f"Goal Achieved By: **{target_date.strftime('%Y-%m-%d')}**")
 
 if st.button("Add Goal"):
-    timeline = [datetime.date.today() + datetime.timedelta(days=i * 30) for i in range(int(months) + 1)]
-    values = np.linspace(initial_contribution, goal_amount, len(timeline))
-    df = {"Date": timeline, "Amount Saved": values}
-    fig = px.line(df, x="Date", y="Amount Saved", title="Goal Timeline")
+    st.session_state.goals.append({
+        "Goal Name": goal_name,
+        "Goal Amount": goal_amount,
+        "Target Date": target_date,
+        "Monthly Contribution": monthly_contribution
+    })
+    
+    years = sorted(set(goal["Target Date"].year for goal in st.session_state.goals))
+    df = {"Year": years, "Amount Saved": np.linspace(0, max(goal_amount for goal in st.session_state.goals), len(years))}
+    fig = px.line(df, x="Year", y="Amount Saved", title="Goal Timeline")
     st.plotly_chart(fig)
     
-    st.subheader("Goal Summary")
-    st.write(f"**Goal Name:** {goal_name}")
-    st.write(f"**Total Amount Needed:** ${goal_amount:.2f}")
-    st.write(f"**Target Date:** {target_date.strftime('%Y-%m-%d')}")
-    st.write(f"**Monthly Contribution:** ${monthly_contribution:.2f}")
+    st.subheader("Goals List")
+    for goal in st.session_state.goals:
+        st.write(f"**Goal Name:** {goal['Goal Name']}")
+        st.write(f"**Total Amount Needed:** ${goal['Goal Amount']:.2f}")
+        st.write(f"**Target Date:** {goal['Target Date'].strftime('%Y-%m-%d')}")
+        st.write(f"**Monthly Contribution:** ${goal['Monthly Contribution']:.2f}")
+        st.write("---")
