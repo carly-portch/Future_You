@@ -97,6 +97,17 @@ if st.session_state.goals:
         textposition="top center"
     ))
 
+    # Draw a blue line connecting today's date to the first goal
+    first_goal = min(st.session_state.goals, key=lambda goal: goal["Target Date"])
+    if today.year <= first_goal["Target Date"].year:  # Ensure the line is valid
+        fig.add_trace(go.Scatter(
+            x=[today.year, first_goal["Target Date"].year],
+            y=[0, 0],
+            mode='lines',
+            line=dict(color='blue', width=2, dash='dot'),
+            name="Today's line to Goal"
+        ))
+
     # Add goals as markers on the timeline
     for goal in st.session_state.goals:
         fig.add_trace(go.Scatter(
