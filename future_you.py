@@ -71,6 +71,8 @@ fig = px.line(df, x="Year", y="Amount Saved", title="Goal Timeline")
 st.plotly_chart(fig)
 
 st.subheader("Goals List")
+
+goal_to_remove = None
 for i, goal in enumerate(st.session_state.goals):
     st.write(f"**Goal Name:** {goal['Goal Name']}")
     st.write(f"**Total Amount Needed:** ${goal['Goal Amount']:.2f}")
@@ -81,9 +83,13 @@ for i, goal in enumerate(st.session_state.goals):
     if col1.button(f"Edit {goal['Goal Name']}"):
         st.session_state.edit_index = i
     if col2.button(f"Remove {goal['Goal Name']}"):
-        st.session_state.goals.pop(i)
-        st.experimental_rerun()
+        goal_to_remove = i  # Mark for deletion
     st.write("---")
+
+# Remove goal after iteration to avoid modifying list during iteration
+if goal_to_remove is not None:
+    del st.session_state.goals[goal_to_remove]
+    st.experimental_rerun()
 
 if "edit_index" in st.session_state:
     index = st.session_state.edit_index
