@@ -82,6 +82,10 @@ if st.session_state.goals:
 
 st.subheader("Goals List")
 
+if st.button("Clear List"):
+    st.session_state.goals = []
+    st.rerun()
+
 goal_to_remove = None
 for i, goal in enumerate(st.session_state.goals):
     st.write(f"**Goal Name:** {goal['Goal Name']}")
