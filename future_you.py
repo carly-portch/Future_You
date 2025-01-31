@@ -104,7 +104,7 @@ if st.session_state.goals:
             x=[today.year, first_goal["Target Date"].year],
             y=[0, 0],
             mode='lines',
-            line=dict(color='blue', width=2, dash='dot'),
+            line=dict(color='blue', width=2),
             name="Today's line to Goal"
         ))
 
