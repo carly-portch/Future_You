@@ -72,7 +72,9 @@ if st.button("Add Goal"):
         st.session_state.goals.append({
             "Goal Name": goal_name,
             "Goal Amount": goal_amount,
+            "Initial Contribution": initial_contribution,
             "Target Date": target_date,
+            "Account Type": account_type,
             "Monthly Contribution": monthly_contribution
         })
         st.rerun()
@@ -104,7 +106,7 @@ if st.session_state.goals:
             x=[today.year, first_goal["Target Date"].year],
             y=[0, 0],
             mode='lines',
-            line=dict(color='blue', width=2),
+            line=dict(color='blue', width=2, dash='dot'),
             name="Today's line to Goal"
         ))
 
@@ -144,7 +146,9 @@ goal_to_remove = None
 for i, goal in enumerate(st.session_state.goals):
     st.write(f"**Goal Name:** {goal['Goal Name']}")
     st.write(f"**Total Amount Needed:** ${goal['Goal Amount']:.2f}")
+    st.write(f"**Initial Contribution:** ${goal['Initial Contribution']:.2f}")
     st.write(f"**Target Date:** {goal['Target Date'].strftime('%Y-%m-%d')}")
+    st.write(f"**Account Type:** {goal['Account Type']}")
     st.write(f"**Monthly Contribution:** ${goal['Monthly Contribution']:.2f}")
     
     col1, col2 = st.columns(2)
@@ -163,14 +167,22 @@ if "edit_index" in st.session_state:
     st.write("## Edit Goal")
     edited_name = st.text_input("Edit Goal Name", value=st.session_state.goals[index]['Goal Name'])
     edited_amount = st.number_input("Edit Goal Amount ($)", min_value=0.01, step=0.01, value=st.session_state.goals[index]['Goal Amount'])
+    edited_initial = st.number_input("Edit Initial Contribution ($)", min_value=0.01, step=0.01, value=st.session_state.goals[index]['Initial Contribution'])
     edited_date = st.date_input("Edit Target Date", value=st.session_state.goals[index]['Target Date'])
     edited_contribution = st.number_input("Edit Monthly Contribution ($)", min_value=0.01, step=0.01, value=st.session_state.goals[index]['Monthly Contribution'])
+    edited_account_type = st.selectbox("Edit Account Type", [
+        "Regular Savings Account (0%)",
+        "High-Yield Savings Account (2%)",
+        "Invested Account (6%)"
+    ], index=["Regular Savings Account (0%)", "High-Yield Savings Account (2%)", "Invested Account (6%)"].index(st.session_state.goals[index]['Account Type']))
     
     if st.button("Save Changes"):
         st.session_state.goals[index] = {
             "Goal Name": edited_name,
             "Goal Amount": edited_amount,
+            "Initial Contribution": edited_initial,
             "Target Date": edited_date,
+            "Account Type": edited_account_type,
             "Monthly Contribution": edited_contribution
         }
         del st.session_state.edit_index
