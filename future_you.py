@@ -5,6 +5,8 @@ import plotly.express as px
 
 def calculate_monthly_contribution(goal_amount, initial_contribution, rate, months):
     """Calculate required monthly contribution given goal amount, initial contribution, rate, and months."""
+    if months <= 0:
+        return 0
     if rate == 0:
         return (goal_amount - initial_contribution) / months
     else:
@@ -13,6 +15,8 @@ def calculate_monthly_contribution(goal_amount, initial_contribution, rate, mont
 
 def calculate_months(goal_amount, initial_contribution, rate, monthly_contribution):
     """Calculate required months to achieve the goal given monthly contribution."""
+    if monthly_contribution <= 0:
+        return float('inf')
     if rate == 0:
         return np.ceil((goal_amount - initial_contribution) / monthly_contribution)
     else:
@@ -45,6 +49,7 @@ rate = rates[account_type]
 
 option = st.radio("Choose one:", ["Set Target Date", "Set Monthly Contribution"])
 
+monthly_contribution = None
 if option == "Set Target Date":
     target_date = st.date_input("Target Date", min_value=datetime.date.today())
     months = (target_date.year - datetime.date.today().year) * 12 + (target_date.month - datetime.date.today().month)
@@ -58,20 +63,22 @@ else:
     st.write(f"Goal Achieved By: **{target_date.strftime('%Y-%m-%d')}**")
 
 if st.button("Add Goal"):
-    st.session_state.goals.append({
-        "Goal Name": goal_name,
-        "Goal Amount": goal_amount,
-        "Target Date": target_date,
-        "Monthly Contribution": monthly_contribution
-    })
-    st.experimental_rerun()
+    if goal_name and goal_amount and monthly_contribution:
+        st.session_state.goals.append({
+            "Goal Name": goal_name,
+            "Goal Amount": goal_amount,
+            "Target Date": target_date,
+            "Monthly Contribution": monthly_contribution
+        })
+        st.rerun()
 
 if st.session_state.goals:
     years = sorted(set(goal["Target Date"].year for goal in st.session_state.goals))
-    amounts = [goal["Goal Amount"] for goal in st.session_state.goals]
-    df = {"Year": years, "Amount Saved": np.linspace(0, max(amounts), len(years))}
-    fig = px.line(df, x="Year", y="Amount Saved", title="Goal Timeline")
-    st.plotly_chart(fig)
+    if years:
+        amounts = [goal["Goal Amount"] for goal in st.session_state.goals]
+        df = {"Year": years, "Amount Saved": np.linspace(0, max(amounts), len(years))}
+        fig = px.line(df, x="Year", y="Amount Saved", title="Goal Timeline")
+        st.plotly_chart(fig)
 
 st.subheader("Goals List")
 
@@ -83,16 +90,15 @@ for i, goal in enumerate(st.session_state.goals):
     st.write(f"**Monthly Contribution:** ${goal['Monthly Contribution']:.2f}")
     
     col1, col2 = st.columns(2)
-    if col1.button(f"Edit {goal['Goal Name']}"):
+    if col1.button(f"Edit {goal['Goal Name']}", key=f"edit_{i}"):
         st.session_state.edit_index = i
-    if col2.button(f"Remove {goal['Goal Name']}"):
+    if col2.button(f"Remove {goal['Goal Name']}", key=f"remove_{i}"):
         goal_to_remove = i  # Mark for deletion
     st.write("---")
 
-# Remove goal after iteration to avoid modifying list during iteration
 if goal_to_remove is not None:
     del st.session_state.goals[goal_to_remove]
-    st.experimental_rerun()
+    st.rerun()
 
 if "edit_index" in st.session_state:
     index = st.session_state.edit_index
@@ -110,4 +116,4 @@ if "edit_index" in st.session_state:
             "Monthly Contribution": edited_contribution
         }
         del st.session_state.edit_index
-        st.experimental_rerun()
+        st.rerun()
