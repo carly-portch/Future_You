@@ -104,7 +104,7 @@ if st.session_state.goals:
             x=[today.year, first_goal["Target Date"].year],
             y=[0, 0],
             mode='lines',
-            line=dict(color='blue', width=2),
+            line=dict(color='blue', width=2, dash='dot'),
             name="Today's line to Goal"
         ))
 
@@ -123,7 +123,14 @@ if st.session_state.goals:
         title="Goal Timeline",
         xaxis_title="Year",
         yaxis=dict(visible=False),
-        showlegend=False
+        showlegend=False,
+        xaxis=dict(
+            tickmode='linear',
+            tick0=min(years),  # Start at the earliest year in the goals
+            dtick=1,  # Increment by 1 year
+            ticks="outside",  # Optional: Add ticks outside the axis
+            ticklen=10  # Optional: Adjust tick length
+        )
     )
     st.plotly_chart(fig)
 
