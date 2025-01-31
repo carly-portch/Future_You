@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import datetime
 import plotly.express as px
+import plotly.graph_objects as go
 
 def calculate_monthly_contribution(goal_amount, initial_contribution, rate, months):
     """Calculate required monthly contribution given goal amount, initial contribution, rate, and months."""
@@ -79,11 +80,26 @@ if st.button("Add Goal"):
 
 if st.session_state.goals:
     years = sorted(set(goal["Target Date"].year for goal in st.session_state.goals))
-    if years:
-        amounts = [goal["Goal Amount"] for goal in st.session_state.goals]
-        df = {"Year": years, "Amount Saved": np.linspace(0, max(amounts), len(years))}
-        fig = px.line(df, x="Year", y="Amount Saved", title="Goal Timeline")
-        st.plotly_chart(fig)
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=years, y=[0] * len(years), mode='lines', line=dict(color='blue', width=2)))
+    
+    for goal in st.session_state.goals:
+        fig.add_trace(go.Scatter(
+            x=[goal["Target Date"].year],
+            y=[0],
+            mode='markers+text',
+            text=[goal["Goal Name"]],
+            textposition='top center',
+            marker=dict(size=10, color='red')
+        ))
+    
+    fig.update_layout(
+        title="Goal Timeline",
+        xaxis_title="Year",
+        yaxis=dict(visible=False),
+        showlegend=False
+    )
+    st.plotly_chart(fig)
 
 st.subheader("Goals List")
 
