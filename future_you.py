@@ -1,7 +1,6 @@
 import streamlit as st
 import numpy as np
 import datetime
-import plotly.express as px
 import plotly.graph_objects as go
 
 def calculate_monthly_contribution(goal_amount, initial_contribution, rate, months):
@@ -78,11 +77,27 @@ if st.button("Add Goal"):
         })
         st.rerun()
 
+# Plot the timeline
 if st.session_state.goals:
     years = sorted(set(goal["Target Date"].year for goal in st.session_state.goals))
     fig = go.Figure()
+
+    # Add the timeline (line)
     fig.add_trace(go.Scatter(x=years, y=[0] * len(years), mode='lines', line=dict(color='blue', width=2)))
     
+    # Add today's date as a marker
+    today = datetime.date.today()
+    fig.add_trace(go.Scatter(
+        x=[today.year],
+        y=[0],
+        mode='markers',
+        marker=dict(size=10, color='green'),
+        name="Today",
+        text=["Today"],
+        textposition="top center"
+    ))
+
+    # Add goals as markers on the timeline
     for goal in st.session_state.goals:
         fig.add_trace(go.Scatter(
             x=[goal["Target Date"].year],
